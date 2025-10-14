@@ -1,19 +1,19 @@
-# @tsee9iii/cybersource-nestjs
+# @tsee9ii/cybersource-nestjs
 
 A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
 
 ## Installation
 
 ````bash
-npm install @tsee9iii/cybersource-nestjs @tsee9iii/cybersource-rest-client
-import { CyberSourceModule } from '@nestjs/cybersource-rest-client-nestjs';urce-rest-client NestJS Module
+npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
+import { CyberSourceModule } from '@tsee9ii/cybersource-rest-client-nestjs'; cybersource-rest-client NestJS Module
 
 A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
 
 ## Installation
 
 ```bash
-npm install @nestjs/cybersource-rest-client-nestjs @nestjs/cybersource-rest-client
+npm install @tsee9iicybersource-rest-client-nestjs @tsee9ii/cybersource-rest-client
 ````
 
 ## Usage
