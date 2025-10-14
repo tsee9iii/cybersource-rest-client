@@ -1,101 +1,38 @@
 import { Injectable, Inject, Logger } from "@nestjs/common";
-import {
-  PaymentsApi,
-  CaptureApi,
-  RefundApi,
-  VoidApi,
-  CustomerApi,
-  PaymentTokensApi,
-  ReversalApi,
-  CreditApi,
-  VerificationApi,
-  PayerAuthenticationApi,
-  DecisionManagerApi,
-  ReportsApi,
-  BinLookupApi,
-  TaxesApi,
-  SubscriptionsApi,
-  PlansApi,
-  CreatePaymentRequest,
-  CapturePaymentRequest,
-  RefundPaymentRequest,
-  VoidPaymentRequest,
-} from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@tsee9ii/cybersource-rest-client";
 import { CyberSourceConfig } from "./cybersource.config";
+
+// Type definitions for the main request types - using any for now since types are inline
+export type CreatePaymentRequest = any;
+export type CapturePaymentRequest = any;
+export type RefundPaymentRequest = any;
+export type VoidPaymentRequest = any;
 
 @Injectable()
 export class CyberSourceService {
   private readonly logger = new Logger(CyberSourceService.name);
-
-  // API instances
-  private readonly paymentsApi: PaymentsApi;
-  private readonly captureApi: CaptureApi;
-  private readonly refundApi: RefundApi;
-  private readonly voidApi: VoidApi;
-  private readonly customerApi: CustomerApi;
-  private readonly paymentTokensApi: PaymentTokensApi;
-  private readonly reversalApi: ReversalApi;
-  private readonly creditApi: CreditApi;
-  private readonly verificationApi: VerificationApi;
-  private readonly payerAuthApi: PayerAuthenticationApi;
-  private readonly decisionManagerApi: DecisionManagerApi;
-  private readonly reportsApi: ReportsApi;
-  private readonly binLookupApi: BinLookupApi;
-  private readonly taxesApi: TaxesApi;
-  private readonly subscriptionsApi: SubscriptionsApi;
-  private readonly plansApi: PlansApi;
+  private readonly api: Api;
 
   constructor(
     @Inject("CYBERSOURCE_CONFIG") private readonly config: CyberSourceConfig
   ) {
-    const basePath =
+    const baseUrl =
       config.sandbox !== false
         ? config.basePath || "https://apitest.cybersource.com"
         : "https://api.cybersource.com";
 
-    // Initialize API instances
-    this.paymentsApi = new PaymentsApi();
-    this.captureApi = new CaptureApi();
-    this.refundApi = new RefundApi();
-    this.voidApi = new VoidApi();
-    this.customerApi = new CustomerApi();
-    this.paymentTokensApi = new PaymentTokensApi();
-    this.reversalApi = new ReversalApi();
-    this.creditApi = new CreditApi();
-    this.verificationApi = new VerificationApi();
-    this.payerAuthApi = new PayerAuthenticationApi();
-    this.decisionManagerApi = new DecisionManagerApi();
-    this.reportsApi = new ReportsApi();
-    this.binLookupApi = new BinLookupApi();
-    this.taxesApi = new TaxesApi();
-    this.subscriptionsApi = new SubscriptionsApi();
-    this.plansApi = new PlansApi();
-
-    // Set base path for all APIs
-    this.setBasePath(basePath);
+    // Initialize the single API instance
+    this.api = new Api({
+      baseUrl,
+      // Configure authentication if needed
+      securityWorker: (securityData: any) => {
+        return {};
+      },
+    });
 
     this.logger.log(
-      `CyberSource client initialized with base path: ${basePath}`
+      `CyberSource client initialized with base URL: ${baseUrl}`
     );
-  }
-
-  private setBasePath(basePath: string): void {
-    this.paymentsApi.basePath = basePath;
-    this.captureApi.basePath = basePath;
-    this.refundApi.basePath = basePath;
-    this.voidApi.basePath = basePath;
-    this.customerApi.basePath = basePath;
-    this.paymentTokensApi.basePath = basePath;
-    this.reversalApi.basePath = basePath;
-    this.creditApi.basePath = basePath;
-    this.verificationApi.basePath = basePath;
-    this.payerAuthApi.basePath = basePath;
-    this.decisionManagerApi.basePath = basePath;
-    this.reportsApi.basePath = basePath;
-    this.binLookupApi.basePath = basePath;
-    this.taxesApi.basePath = basePath;
-    this.subscriptionsApi.basePath = basePath;
-    this.plansApi.basePath = basePath;
   }
 
   // Payment Processing Methods
@@ -104,12 +41,12 @@ export class CyberSourceService {
       this.logger.debug("Creating payment", {
         amount: request.orderInformation?.amountDetails?.totalAmount,
       });
-      const response = await this.paymentsApi.createPayment(request);
+      const response = await this.api.pts.createPayment(request);
       this.logger.log("Payment created successfully", {
-        id: response.body.id,
-        status: response.body.status,
+        id: response.data.id,
+        status: response.data.status,
       });
-      return response.body;
+      return response.data;
     } catch (error) {
       this.logger.error("Failed to create payment", error);
       throw error;
@@ -119,12 +56,12 @@ export class CyberSourceService {
   async capturePayment(id: string, request: CapturePaymentRequest) {
     try {
       this.logger.debug("Capturing payment", { paymentId: id });
-      const response = await this.captureApi.capturePayment(request, id);
+      const response = await this.api.pts.capturePayment(id, request);
       this.logger.log("Payment captured successfully", {
-        id: response.body.id,
-        status: response.body.status,
+        id: response.data.id,
+        status: response.data.status,
       });
-      return response.body;
+      return response.data;
     } catch (error) {
       this.logger.error("Failed to capture payment", error);
       throw error;
@@ -134,12 +71,12 @@ export class CyberSourceService {
   async refundPayment(id: string, request: RefundPaymentRequest) {
     try {
       this.logger.debug("Refunding payment", { paymentId: id });
-      const response = await this.refundApi.refundPayment(request, id);
+      const response = await this.api.pts.refundPayment(id, request);
       this.logger.log("Payment refunded successfully", {
-        id: response.body.id,
-        status: response.body.status,
+        id: response.data.id,
+        status: response.data.status,
       });
-      return response.body;
+      return response.data;
     } catch (error) {
       this.logger.error("Failed to refund payment", error);
       throw error;
@@ -149,80 +86,41 @@ export class CyberSourceService {
   async voidPayment(id: string, request: VoidPaymentRequest) {
     try {
       this.logger.debug("Voiding payment", { paymentId: id });
-      const response = await this.voidApi.voidPayment(request, id);
+      const response = await this.api.pts.voidPayment(id, request);
       this.logger.log("Payment voided successfully", {
-        id: response.body.id,
-        status: response.body.status,
+        id: response.data.id,
+        status: response.data.status,
       });
-      return response.body;
+      return response.data;
     } catch (error) {
       this.logger.error("Failed to void payment", error);
       throw error;
     }
   }
 
-  // Getter methods for direct API access
-  get payments(): PaymentsApi {
-    return this.paymentsApi;
+  // Direct API access for advanced usage
+  get apiClient(): Api {
+    return this.api;
   }
 
-  get capture(): CaptureApi {
-    return this.captureApi;
+  // Convenience getters for different API sections
+  get payments() {
+    return this.api.pts;
   }
 
-  get refund(): RefundApi {
-    return this.refundApi;
+  get tms() {
+    return this.api.tms;
   }
 
-  get void(): VoidApi {
-    return this.voidApi;
+  get risk() {
+    return this.api.risk;
   }
 
-  get customer(): CustomerApi {
-    return this.customerApi;
+  get flex() {
+    return this.api.flex;
   }
 
-  get paymentTokens(): PaymentTokensApi {
-    return this.paymentTokensApi;
-  }
-
-  get reversal(): ReversalApi {
-    return this.reversalApi;
-  }
-
-  get credit(): CreditApi {
-    return this.creditApi;
-  }
-
-  get verification(): VerificationApi {
-    return this.verificationApi;
-  }
-
-  get payerAuth(): PayerAuthenticationApi {
-    return this.payerAuthApi;
-  }
-
-  get decisionManager(): DecisionManagerApi {
-    return this.decisionManagerApi;
-  }
-
-  get reports(): ReportsApi {
-    return this.reportsApi;
-  }
-
-  get binLookup(): BinLookupApi {
-    return this.binLookupApi;
-  }
-
-  get taxes(): TaxesApi {
-    return this.taxesApi;
-  }
-
-  get subscriptions(): SubscriptionsApi {
-    return this.subscriptionsApi;
-  }
-
-  get plans(): PlansApi {
-    return this.plansApi;
+  get reporting() {
+    return this.api.reporting;
   }
 }

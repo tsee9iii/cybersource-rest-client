@@ -1,10 +1,19 @@
 # @tsee9ii/cybersource-rest-client
 
-A TypeScript/JavaScript client library for the CyberSource REST API, generated using Swagger Codegen. This package provides type-safe access to all CyberSource payment processing and merchant services APIs.
+A modern TypeScript/JavaScript client library for the CyberSource REST API, generated using swagger-typescript-api. This package provides type-safe access to all CyberSource payment processing and merchant services APIs with native fetch support and zero external dependencies.
 
 ## 📋 Overview
 
-This client library is auto-generated from the [CyberSource API specification](https://developer.cybersource.com/api/reference/api-reference.html) using Swagger Codegen v2.4.49. It includes comprehensive TypeScript definitions and supports all CyberSource REST API endpoints.
+This client library is auto-generated from the [CyberSource API specification](https://developer.cybersource.com/api/reference/api-reference.html) using swagger-typescript-api. It includes comprehensive TypeScript definitions, uses native fetch API, and supports all CyberSource REST API endpoints.
+
+## ✨ Features
+
+- 🎯 **Modern Architecture**: Built with swagger-typescript-api using native fetch
+- 🛡️ **Type Safety**: Full TypeScript support with comprehensive type definitions  
+- 📦 **Zero Dependencies**: No external runtime dependencies required
+- 🔌 **Single API Class**: Simplified interface with organized endpoint groupings
+- 🚀 **NestJS Integration**: Dedicated NestJS module available
+- 🌐 **Cross-Platform**: Works in Node.js and modern browsers
 
 ## 🚀 Installation
 
@@ -45,42 +54,38 @@ The library supports CyberSource's HTTP Signature authentication. You'll need:
 ### Basic Import
 
 ````typescript
-import {
-    PaymentsApi,
-    CaptureApi,
-    RefundApi,
-    VoidApi,
-    // ... other APIs
-} from '@tsee9ii/cybersource-rest-client';
+import { Api } from '@tsee9ii/cybersource-rest-client';
+````
 
 ### Initialize API Client
 
 ```typescript
-import { PaymentsApi } from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@tsee9ii/cybersource-rest-client";
 
 // Configure the API client
-const paymentsApi = new PaymentsApi();
-paymentsApi.setDefaultAuthentication({
-  // Add your authentication configuration here
-  // This will depend on your specific authentication setup
+const cyberSourceApi = new Api({
+  baseUrl: "https://apitest.cybersource.com", // Sandbox
+  // baseUrl: "https://api.cybersource.com", // Production
+  securityWorker: (securityData: any) => {
+    // Add your authentication configuration here
+    // Return headers for HTTP Signature authentication
+    return {
+      // Your authentication headers
+    };
+  },
 });
-
-// Set base path (sandbox or production)
-paymentsApi.basePath = "https://apitest.cybersource.com"; // Sandbox
-// paymentsApi.basePath = 'https://api.cybersource.com'; // Production
-````
+```
 
 ### Example: Process a Payment
 
 ```typescript
-import {
-  PaymentsApi,
-  CreatePaymentRequest,
-} from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@tsee9ii/cybersource-rest-client";
 
-const paymentsApi = new PaymentsApi();
+const cyberSourceApi = new Api({
+  baseUrl: "https://apitest.cybersource.com"
+});
 
-const paymentRequest: CreatePaymentRequest = {
+const paymentRequest = {
   clientReferenceInformation: {
     code: "TC50171_3",
   },
@@ -115,34 +120,53 @@ const paymentRequest: CreatePaymentRequest = {
 };
 
 try {
-  const response = await paymentsApi.createPayment(paymentRequest);
-  console.log("Payment processed successfully:", response.body);
+  const response = await cyberSourceApi.pts.createPayment(paymentRequest);
+  console.log("Payment processed successfully:", response.data);
 } catch (error) {
   console.error("Payment failed:", error);
 }
 ```
 
-## 🎯 Available APIs
+## 🎯 Available API Endpoints
 
-This client provides access to all CyberSource REST API endpoints through dedicated API classes:
+This client provides access to all CyberSource REST API endpoints through organized namespaces:
 
-### Core Payment Processing
+### Core Payment Processing (pts)
 
-- **PaymentsApi** - Authorization and sale transactions
-- **CaptureApi** - Capture authorized payments
-- **RefundApi** - Process refunds
-- **VoidApi** - Void transactions
-- **ReversalApi** - Reverse authorization holds
-- **CreditApi** - Standalone credit transactions
+```typescript
+// Payment operations
+cyberSourceApi.pts.createPayment(request)
+cyberSourceApi.pts.capturePayment(id, request)
+cyberSourceApi.pts.refundPayment(id, request) 
+cyberSourceApi.pts.voidPayment(id, request)
+cyberSourceApi.pts.incrementAuth(id, request)
+```
 
-### Customer & Token Management
+### Token Management Service (tms)
 
-- **CustomerApi** - Customer profile management
-- **CustomerPaymentInstrumentApi** - Saved payment methods
-- **CustomerShippingAddressApi** - Customer addresses
-- **PaymentTokensApi** - Token management
-- **TokenApi** - Tokenization services
-- **TokenizedCardApi** - Tokenized card operations
+```typescript  
+// Customer and token management
+cyberSourceApi.tms.createCustomer(request)
+cyberSourceApi.tms.getCustomer(customerId)
+cyberSourceApi.tms.updateCustomer(customerId, request)
+cyberSourceApi.tms.deleteCustomer(customerId)
+```
+
+### Risk Management (risk)
+
+```typescript
+// Decision manager and fraud screening  
+cyberSourceApi.risk.createDecision(request)
+cyberSourceApi.risk.addNegative(request)
+```
+
+### Reporting
+
+```typescript
+// Reports and transaction details
+cyberSourceApi.reporting.searchTransactions(request)
+cyberSourceApi.reporting.getTransactionDetails(id)
+```
 
 ### Subscription & Recurring Billing
 
