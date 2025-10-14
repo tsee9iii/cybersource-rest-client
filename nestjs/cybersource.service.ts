@@ -114,10 +114,6 @@ export class CyberSourceService {
     return this.api.risk;
   }
 
-  get flex() {
-    return this.api.flex;
-  }
-
   get reporting() {
     return this.api.reporting;
   }

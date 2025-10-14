@@ -1,6 +1,6 @@
 {
   "name": "@tsee9ii/cybersource-rest-client",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "TypeScript/JavaScript client library for CyberSource REST API, generated using swagger-typescript-api",
   "main": "api.ts",
   "types": "api.ts",
