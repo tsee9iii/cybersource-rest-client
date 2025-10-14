@@ -11,7 +11,7 @@ export type VoidPaymentRequest = any;
 @Injectable()
 export class CyberSourceService {
   private readonly logger = new Logger(CyberSourceService.name);
-  private readonly api: Api;
+  private readonly api: Api<unknown>;
 
   constructor(
     @Inject("CYBERSOURCE_CONFIG") private readonly config: CyberSourceConfig
@@ -97,7 +97,7 @@ export class CyberSourceService {
   }
 
   // Direct API access for advanced usage
-  get apiClient(): Api {
+  get apiClient(): Api<unknown> {
     return this.api;
   }
 
