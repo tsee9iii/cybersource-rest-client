@@ -1,7 +1,7 @@
 {
   "name": "@tsee9ii/cybersource-nestjs",
-  "version": "2.0.4",
-  "description": "NestJS module for CyberSource REST API integration (v2 with modern fetch API)",
+  "version": "1.0.0",
+  "description": "NestJS module for CyberSource REST API integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
