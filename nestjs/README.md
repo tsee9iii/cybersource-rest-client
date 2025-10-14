@@ -13,7 +13,7 @@ A NestJS module wrapper for the CyberSource REST API client, providing seamless 
 ## Installation
 
 ```bash
-npm install @tsee9iicybersource-rest-client-nestjs @tsee9ii/cybersource-rest-client
+npm install @tsee9ii/cybersource-rest-client-nestjs @tsee9ii/cybersource-rest-client
 ````
 
 ## Usage

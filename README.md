@@ -1,4 +1,4 @@
-# @tsee9iii/cybersource-rest-client
+# @tsee9ii/cybersource-rest-client
 
 A TypeScript/JavaScript client library for the CyberSource REST API, generated using Swagger Codegen. This package provides type-safe access to all CyberSource payment processing and merchant services APIs.
 
@@ -14,10 +14,10 @@ To use this package in another project, you can install it directly from the rep
 
 ```bash
 # Install from GitHub repository
-npm install git+https://github.com/tsee9iii/nestjs-cybersource-rest-client.git
+npm install git+https://github.com/tsee9ii/nestjs-cybersource-rest-client.git
 
 # Or if you publish to npm
-npm install @tsee9iii/cybersource-rest-client
+npm install @tsee9ii/cybersource-rest-client
 ```
 
 ### Manual Installation
@@ -51,12 +51,12 @@ import {
     RefundApi,
     VoidApi,
     // ... other APIs
-} from '@tsee9iii/cybersource-rest-client';
+} from '@tsee9ii/cybersource-rest-client';
 
 ### Initialize API Client
 
 ```typescript
-import { PaymentsApi } from "@nestjs/cybersource-rest-client";
+import { PaymentsApi } from "@tsee9ii/cybersource-rest-client";
 
 // Configure the API client
 const paymentsApi = new PaymentsApi();
@@ -76,7 +76,7 @@ paymentsApi.basePath = "https://apitest.cybersource.com"; // Sandbox
 import {
   PaymentsApi,
   CreatePaymentRequest,
-} from "@nestjs/cybersource-rest-client";
+} from "@tsee9ii/cybersource-rest-client";
 
 const paymentsApi = new PaymentsApi();
 
@@ -231,7 +231,7 @@ This package includes full TypeScript definitions. Make sure your `tsconfig.json
 ## 🐛 Error Handling
 
 ```typescript
-import { PaymentsApi } from "@nestjs/cybersource-rest-client";
+import { PaymentsApi } from "@tsee9ii/cybersource-rest-client";
 
 try {
   const response = await paymentsApi.createPayment(paymentRequest);

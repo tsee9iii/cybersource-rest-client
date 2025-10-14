@@ -51,13 +51,13 @@ npm publish
 ### Installing the Main Package
 
 ```bash
-npm install @tsee9iii/cybersource-rest-client
+npm install @tsee9ii/cybersource-rest-client
 ```
 
 ### Installing the NestJS Module
 
 ```bash
-npm install @tsee9iii/cybersource-nestjs @tsee9iii/cybersource-rest-client
+npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
 ```
 
 ## Pre-publish Checklist
