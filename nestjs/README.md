@@ -1,13 +1,11 @@
-# @nestjs/cybe```typescript
+# @tsee9iii/cybersource-nestjs
 
-import ```typescript
-import { Modu`````typescript
-import { Injectable } from '@nestjs/common';
-import { CyberSourceService } from '@nestjs/cybersource-rest-client-nestjs';pescript
-import { Injectable } from '@nestjs/common';
-import { CyberSourceService } from '@nestjs/cybersource-rest-client-nestjs';} from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CyberSourceModule } from '@nestjs/cybersource-rest-client-nestjs';dule } from '@nestjs/common';
+A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
+
+## Installation
+
+````bash
+npm install @tsee9iii/cybersource-nestjs @tsee9iii/cybersource-rest-client
 import { CyberSourceModule } from '@nestjs/cybersource-rest-client-nestjs';urce-rest-client NestJS Module
 
 A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
@@ -16,7 +14,7 @@ A NestJS module wrapper for the CyberSource REST API client, providing seamless 
 
 ```bash
 npm install @nestjs/cybersource-rest-client-nestjs @nestjs/cybersource-rest-client
-```
+````
 
 ## Usage
 

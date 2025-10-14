@@ -20,7 +20,7 @@ import {
   CapturePaymentRequest,
   RefundPaymentRequest,
   VoidPaymentRequest,
-} from "@nestjs/cybersource-rest-client";
+} from "@tsee9iii/cybersource-rest-client";
 import { CyberSourceConfig } from "./cybersource.config";
 
 @Injectable()

@@ -1,5 +1,5 @@
 {
-  "name": "@nestjs/cybersource-rest-client-nestjs",
+  "name": "@tsee9iii/cybersource-nestjs",
   "version": "1.0.0",
   "description": "NestJS module for CyberSource REST API integration",
   "main": "index.js",
@@ -32,7 +32,7 @@
     "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "@nestjs/cybersource-rest-client": "^1.0.0"
+    "@tsee9iii/cybersource-rest-client": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^16.18.0",
