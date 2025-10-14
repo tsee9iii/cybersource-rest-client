@@ -6,14 +6,14 @@ A NestJS module wrapper for the CyberSource REST API client, providing seamless 
 
 ````bash
 npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
-import { CyberSourceModule } from '@tsee9ii/cybersource-rest-client-nestjs'; cybersource-rest-client NestJS Module
+import { CyberSourceModule } from '@tsee9ii/cybersource-nestjs'; cybersource-rest-client NestJS Module
 
 A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
 
 ## Installation
 
 ```bash
-npm install @tsee9ii/cybersource-rest-client-nestjs @tsee9ii/cybersource-rest-client
+npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
 ````
 
 ## Usage
@@ -22,7 +22,7 @@ npm install @tsee9ii/cybersource-rest-client-nestjs @tsee9ii/cybersource-rest-cl
 
 ```typescript
 import { Module } from "@nestjs/common";
-import { CyberSourceModule } from "cybersource-nestjs";
+import { CyberSourceModule } from "@tsee9ii/cybersource-nestjs";
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ export class AppModule {}
 ```typescript
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { CyberSourceModule } from "cybersource-nestjs";
+import { CyberSourceModule } from "@tsee9ii/cybersource-nestjs";
 
 @Module({
   imports: [
@@ -65,7 +65,7 @@ export class AppModule {}
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { CyberSourceService } from "cybersource-nestjs";
+import { CyberSourceService } from "@tsee9ii/cybersource-nestjs";
 
 @Injectable()
 export class PaymentService {
@@ -152,7 +152,7 @@ export class PaymentService {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { CyberSourceService } from "cybersource-nestjs";
+import { CyberSourceService } from "@tsee9ii/cybersource-nestjs";
 
 @Injectable()
 export class AdvancedPaymentService {
