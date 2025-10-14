@@ -1,0 +1,248 @@
+# @nestjs/cybe```typescript
+
+import ```typescript
+import { Modu`````typescript
+import { Injectable } from '@nestjs/common';
+import { CyberSourceService } from '@nestjs/cybersource-rest-client-nestjs';pescript
+import { Injectable } from '@nestjs/common';
+import { CyberSourceService } from '@nestjs/cybersource-rest-client-nestjs';} from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CyberSourceModule } from '@nestjs/cybersource-rest-client-nestjs';dule } from '@nestjs/common';
+import { CyberSourceModule } from '@nestjs/cybersource-rest-client-nestjs';urce-rest-client NestJS Module
+
+A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
+
+## Installation
+
+```bash
+npm install @nestjs/cybersource-rest-client-nestjs @nestjs/cybersource-rest-client
+```
+
+## Usage
+
+### 1. Import the Module
+
+```typescript
+import { Module } from "@nestjs/common";
+import { CyberSourceModule } from "cybersource-nestjs";
+
+@Module({
+  imports: [
+    CyberSourceModule.forRoot({
+      merchantId: "your-merchant-id",
+      apiKey: "your-api-key",
+      sharedSecretKey: "your-shared-secret",
+      sandbox: true, // Use false for production
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### 2. Async Configuration
+
+```typescript
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { CyberSourceModule } from "cybersource-nestjs";
+
+@Module({
+  imports: [
+    ConfigModule.forRoot(),
+    CyberSourceModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        merchantId: configService.get("CYBERSOURCE_MERCHANT_ID"),
+        apiKey: configService.get("CYBERSOURCE_API_KEY"),
+        sharedSecretKey: configService.get("CYBERSOURCE_SHARED_SECRET"),
+        sandbox: configService.get("NODE_ENV") !== "production",
+      }),
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+### 3. Inject and Use the Service
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { CyberSourceService } from "cybersource-nestjs";
+
+@Injectable()
+export class PaymentService {
+  constructor(private readonly cyberSource: CyberSourceService) {}
+
+  async processPayment(paymentData: any) {
+    const paymentRequest = {
+      clientReferenceInformation: {
+        code: `order-${Date.now()}`,
+      },
+      processingInformation: {
+        capture: false,
+      },
+      paymentInformation: {
+        card: {
+          number: paymentData.cardNumber,
+          expirationMonth: paymentData.expirationMonth,
+          expirationYear: paymentData.expirationYear,
+          securityCode: paymentData.cvv,
+        },
+      },
+      orderInformation: {
+        amountDetails: {
+          totalAmount: paymentData.amount,
+          currency: "USD",
+        },
+        billTo: {
+          firstName: paymentData.firstName,
+          lastName: paymentData.lastName,
+          address1: paymentData.address,
+          locality: paymentData.city,
+          administrativeArea: paymentData.state,
+          postalCode: paymentData.zipCode,
+          country: paymentData.country,
+          email: paymentData.email,
+        },
+      },
+    };
+
+    try {
+      const result = await this.cyberSource.createPayment(paymentRequest);
+      return {
+        success: true,
+        transactionId: result.id,
+        status: result.status,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        details: error,
+      };
+    }
+  }
+
+  async capturePayment(paymentId: string, amount?: string) {
+    const captureRequest = {
+      orderInformation: {
+        amountDetails: {
+          totalAmount: amount,
+        },
+      },
+    };
+
+    return await this.cyberSource.capturePayment(paymentId, captureRequest);
+  }
+
+  async refundPayment(paymentId: string, amount?: string) {
+    const refundRequest = {
+      orderInformation: {
+        amountDetails: {
+          totalAmount: amount,
+        },
+      },
+    };
+
+    return await this.cyberSource.refundPayment(paymentId, refundRequest);
+  }
+}
+```
+
+### 4. Direct API Access
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { CyberSourceService } from "cybersource-nestjs";
+
+@Injectable()
+export class AdvancedPaymentService {
+  constructor(private readonly cyberSource: CyberSourceService) {}
+
+  async createCustomer(customerData: any) {
+    // Direct access to Customer API
+    return await this.cyberSource.customer.postCustomer(customerData);
+  }
+
+  async generateReport(reportRequest: any) {
+    // Direct access to Reports API
+    return await this.cyberSource.reports.createReport(reportRequest);
+  }
+
+  async performBinLookup(cardNumber: string) {
+    // Direct access to BIN Lookup API
+    const request = {
+      paymentInformation: {
+        card: {
+          number: cardNumber.substring(0, 6), // First 6 digits for BIN lookup
+        },
+      },
+    };
+    return await this.cyberSource.binLookup.getAccountInfo(request);
+  }
+}
+```
+
+## Available APIs
+
+The service provides access to all CyberSource APIs through both high-level methods and direct API access:
+
+### High-Level Methods
+
+- `createPayment(request)` - Process payments
+- `capturePayment(id, request)` - Capture authorized payments
+- `refundPayment(id, request)` - Process refunds
+- `voidPayment(id, request)` - Void transactions
+
+### Direct API Access
+
+- `cyberSource.payments` - PaymentsApi
+- `cyberSource.capture` - CaptureApi
+- `cyberSource.refund` - RefundApi
+- `cyberSource.void` - VoidApi
+- `cyberSource.customer` - CustomerApi
+- `cyberSource.paymentTokens` - PaymentTokensApi
+- `cyberSource.verification` - VerificationApi
+- `cyberSource.payerAuth` - PayerAuthenticationApi
+- `cyberSource.decisionManager` - DecisionManagerApi
+- `cyberSource.reports` - ReportsApi
+- `cyberSource.binLookup` - BinLookupApi
+- `cyberSource.taxes` - TaxesApi
+- `cyberSource.subscriptions` - SubscriptionsApi
+- `cyberSource.plans` - PlansApi
+
+## Configuration Options
+
+```typescript
+interface CyberSourceConfig {
+  merchantId: string; // Your CyberSource Merchant ID
+  apiKey: string; // Your CyberSource API Key
+  sharedSecretKey: string; // Your CyberSource Shared Secret
+  basePath?: string; // Custom API endpoint (optional)
+  timeout?: number; // Request timeout in milliseconds (default: 30000)
+  sandbox?: boolean; // Use sandbox environment (default: true)
+}
+```
+
+## Error Handling
+
+The module includes comprehensive error handling and logging:
+
+```typescript
+try {
+  const result = await this.cyberSource.createPayment(paymentRequest);
+  console.log("Payment successful:", result.id);
+} catch (error) {
+  if (error.response) {
+    console.error("API Error:", error.response.statusCode);
+    console.error("Error details:", error.body);
+  } else {
+    console.error("Request failed:", error.message);
+  }
+}
+```
+
+## License
+
+MIT
