@@ -1,16 +1,18 @@
 {
   "name": "@tsee9ii/cybersource-rest-client",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "description": "TypeScript/JavaScript client library for CyberSource REST API, generated using swagger-typescript-api",
-  "main": "api.ts",
-  "types": "api.ts",
+  "main": "dist/api.js",
+  "types": "dist/api.d.ts",
   "files": [
-    "api.ts",
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
     "README.md",
-    "PUBLISHING.md"
+    "MIGRATION.md"
   ],
   "scripts": {
-    "build": "echo 'Using TypeScript source directly'",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
