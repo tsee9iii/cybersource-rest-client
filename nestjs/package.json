@@ -1,19 +1,16 @@
 {
   "name": "@tsee9ii/cybersource-nestjs",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "NestJS module for CyberSource REST API integration (v2 with modern fetch API)",
-  "main": "index.ts",
-  "types": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "*.ts",
-    "*.js",
-    "*.d.ts",
-    "decorators/",
-    "interfaces/"
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
   ],
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "echo 'Publishing TypeScript source files'"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "nestjs",
@@ -35,7 +32,11 @@
     "@tsee9ii/cybersource-rest-client": "^2.0.0"
   },
   "devDependencies": {
+    "@nestjs/common": "^10.4.20",
+    "@nestjs/core": "^10.4.20",
     "@types/node": "^16.18.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
     "typescript": "^4.9.0"
   }
 }
