@@ -1,4 +1,7 @@
 wwwroot/*.js
 node_modules
 typings
+
+
 /nestjs/dist
+/dist

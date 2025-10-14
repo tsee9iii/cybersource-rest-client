@@ -9,7 +9,7 @@ This client library is auto-generated from the [CyberSource API specification](h
 ## ✨ Features
 
 - 🎯 **Modern Architecture**: Built with swagger-typescript-api using native fetch
-- 🛡️ **Type Safety**: Full TypeScript support with comprehensive type definitions  
+- 🛡️ **Type Safety**: Full TypeScript support with comprehensive type definitions
 - 📦 **Zero Dependencies**: No external runtime dependencies required
 - 🔌 **Single API Class**: Simplified interface with organized endpoint groupings
 - 🚀 **NestJS Integration**: Dedicated NestJS module available
@@ -53,9 +53,9 @@ The library supports CyberSource's HTTP Signature authentication. You'll need:
 
 ### Basic Import
 
-````typescript
-import { Api } from '@tsee9ii/cybersource-rest-client';
-````
+```typescript
+import { Api } from "@tsee9ii/cybersource-rest-client";
+```
 
 ### Initialize API Client
 
@@ -82,7 +82,7 @@ const cyberSourceApi = new Api({
 import { Api } from "@tsee9ii/cybersource-rest-client";
 
 const cyberSourceApi = new Api({
-  baseUrl: "https://apitest.cybersource.com"
+  baseUrl: "https://apitest.cybersource.com",
 });
 
 const paymentRequest = {
@@ -135,37 +135,37 @@ This client provides access to all CyberSource REST API endpoints through organi
 
 ```typescript
 // Payment operations
-cyberSourceApi.pts.createPayment(request)
-cyberSourceApi.pts.capturePayment(id, request)
-cyberSourceApi.pts.refundPayment(id, request) 
-cyberSourceApi.pts.voidPayment(id, request)
-cyberSourceApi.pts.incrementAuth(id, request)
+cyberSourceApi.pts.createPayment(request);
+cyberSourceApi.pts.capturePayment(id, request);
+cyberSourceApi.pts.refundPayment(id, request);
+cyberSourceApi.pts.voidPayment(id, request);
+cyberSourceApi.pts.incrementAuth(id, request);
 ```
 
 ### Token Management Service (tms)
 
-```typescript  
+```typescript
 // Customer and token management
-cyberSourceApi.tms.createCustomer(request)
-cyberSourceApi.tms.getCustomer(customerId)
-cyberSourceApi.tms.updateCustomer(customerId, request)
-cyberSourceApi.tms.deleteCustomer(customerId)
+cyberSourceApi.tms.createCustomer(request);
+cyberSourceApi.tms.getCustomer(customerId);
+cyberSourceApi.tms.updateCustomer(customerId, request);
+cyberSourceApi.tms.deleteCustomer(customerId);
 ```
 
 ### Risk Management (risk)
 
 ```typescript
-// Decision manager and fraud screening  
-cyberSourceApi.risk.createDecision(request)
-cyberSourceApi.risk.addNegative(request)
+// Decision manager and fraud screening
+cyberSourceApi.risk.createDecision(request);
+cyberSourceApi.risk.addNegative(request);
 ```
 
 ### Reporting
 
 ```typescript
 // Reports and transaction details
-cyberSourceApi.reporting.searchTransactions(request)
-cyberSourceApi.reporting.getTransactionDetails(id)
+cyberSourceApi.reporting.searchTransactions(request);
+cyberSourceApi.reporting.getTransactionDetails(id);
 ```
 
 ### Subscription & Recurring Billing

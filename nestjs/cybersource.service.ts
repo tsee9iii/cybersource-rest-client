@@ -30,9 +30,7 @@ export class CyberSourceService {
       },
     });
 
-    this.logger.log(
-      `CyberSource client initialized with base URL: ${baseUrl}`
-    );
+    this.logger.log(`CyberSource client initialized with base URL: ${baseUrl}`);
   }
 
   // Payment Processing Methods
