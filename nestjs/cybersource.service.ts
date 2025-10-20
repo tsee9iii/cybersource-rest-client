@@ -1,5 +1,5 @@
 import { Injectable, Inject, Logger } from "@nestjs/common";
-import { Api } from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@infinitesolutions/cybersource-rest-client";
 import { CyberSourceConfig } from "./cybersource.config";
 import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
 

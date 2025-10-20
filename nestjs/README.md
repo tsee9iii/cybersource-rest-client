@@ -1,4 +1,4 @@
-# @tsee9ii/cybersource-nestjs
+# @infinitesolutions/cybersource-nestjs
 
 A NestJS module for integrating with the CyberSource REST API with built-in HTTP Signature authentication.
 
@@ -14,14 +14,14 @@ A NestJS module for integrating with the CyberSource REST API with built-in HTTP
 
 ````bash
 npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
-import { CyberSourceModule } from '@tsee9ii/cybersource-nestjs'; # cybersource-rest-client NestJS Module
+import { CyberSourceModule } from '@infinitesolutions/cybersource-nestjs'; # cybersource-rest-client NestJS Module
 
 A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
 
 ## Installation
 
 ```bash
-npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
+npm install @infinitesolutions/cybersource-nestjs @infinitesolutions/cybersource-rest-client
 ````
 
 ## Usage
@@ -30,7 +30,7 @@ npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
 
 ```typescript
 import { Module } from "@nestjs/common";
-import { CyberSourceModule } from "@tsee9ii/cybersource-nestjs";
+import { CyberSourceModule } from "@infinitesolutions/cybersource-nestjs";
 
 @Module({
   imports: [
@@ -50,7 +50,7 @@ export class AppModule {}
 ```typescript
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { CyberSourceModule } from "@tsee9ii/cybersource-nestjs";
+import { CyberSourceModule } from "@infinitesolutions/cybersource-nestjs";
 
 @Module({
   imports: [
@@ -73,7 +73,7 @@ export class AppModule {}
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { CyberSourceService } from "@tsee9ii/cybersource-nestjs";
+import { CyberSourceService } from "@infinitesolutions/cybersource-nestjs";
 
 @Injectable()
 export class PaymentService {
@@ -160,7 +160,7 @@ export class PaymentService {
 
 ```typescript
 import { Injectable } from "@nestjs/common";
-import { CyberSourceService } from "@tsee9ii/cybersource-nestjs";
+import { CyberSourceService } from "@infinitesolutions/cybersource-nestjs";
 
 @Injectable()
 export class AdvancedPaymentService {

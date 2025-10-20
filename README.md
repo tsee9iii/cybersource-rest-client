@@ -1,4 +1,4 @@
-# @tsee9ii/cybersource-rest-client
+# @infinitesolutions/cybersource-rest-client
 
 A modern TypeScript/JavaScript client library for the CyberSource REST API, generated using swagger-typescript-api. This package provides type-safe access to all CyberSource payment processing and merchant services APIs with native fetch support and zero external dependencies.
 
@@ -20,7 +20,7 @@ This client library is auto-generated from the [CyberSource API specification](h
 For NestJS applications, we provide a dedicated module with built-in HTTP Signature authentication:
 
 ```bash
-npm install @tsee9ii/cybersource-nestjs
+npm install @infinitesolutions/cybersource-nestjs
 ```
 
 The NestJS package automatically handles:
@@ -41,10 +41,10 @@ To use this package in another project, you can install it directly from the rep
 
 ```bash
 # Install from GitHub repository
-npm install git+https://github.com/tsee9ii/nestjs-cybersource-rest-client.git
+npm install git+https://github.com/tsee9iii/nestjs-cybersource-rest-client.git
 
 # Or if you publish to npm
-npm install @tsee9ii/cybersource-rest-client
+npm install @infinitesolutions/cybersource-rest-client
 ```
 
 ### Manual Installation
@@ -74,13 +74,13 @@ The library supports CyberSource's HTTP Signature authentication. You'll need:
 ### Basic Import
 
 ```typescript
-import { Api } from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@infinitesolutions/cybersource-rest-client";
 ```
 
 ### Initialize API Client
 
 ```typescript
-import { Api } from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@infinitesolutions/cybersource-rest-client";
 
 // Configure the API client with HTTP Signature authentication
 const cyberSourceApi = new Api({
@@ -102,7 +102,7 @@ const cyberSourceApi = new Api({
 ### Example: Process a Payment
 
 ```typescript
-import { Api } from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@infinitesolutions/cybersource-rest-client";
 
 const cyberSourceApi = new Api({
   baseUrl: "https://apitest.cybersource.com",
@@ -278,7 +278,7 @@ This package includes full TypeScript definitions. Make sure your `tsconfig.json
 ## 🐛 Error Handling
 
 ```typescript
-import { PaymentsApi } from "@tsee9ii/cybersource-rest-client";
+import { PaymentsApi } from "@infinitesolutions/cybersource-rest-client";
 
 try {
   const response = await paymentsApi.createPayment(paymentRequest);
