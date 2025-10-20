@@ -15,6 +15,24 @@ This client library is auto-generated from the [CyberSource API specification](h
 - 🚀 **NestJS Integration**: Dedicated NestJS module available
 - 🌐 **Cross-Platform**: Works in Node.js and modern browsers
 
+## 🚀 NestJS Integration
+
+For NestJS applications, we provide a dedicated module with built-in HTTP Signature authentication:
+
+```bash
+npm install @tsee9ii/cybersource-nestjs
+```
+
+The NestJS package automatically handles:
+
+- ✅ HTTP Signature authentication (RFC compliant)
+- ✅ Request body hashing (SHA-256)
+- ✅ Header generation and validation
+- ✅ Secure credential management
+- ✅ Error handling and logging
+
+See the [`nestjs/`](./nestjs/) directory for complete documentation and examples.
+
 ## 🚀 Installation
 
 ### As a Package Dependency
@@ -46,8 +64,10 @@ Before using the client, you'll need to configure your CyberSource credentials a
 The library supports CyberSource's HTTP Signature authentication. You'll need:
 
 - Merchant ID
-- API Key
-- Shared Secret Key
+- API Key ID (keyid)
+- Shared Secret Key (Base64 encoded)
+
+**Important**: For proper security implementation, use the NestJS package (`@tsee9ii/cybersource-nestjs`) which includes automatic HTTP Signature authentication according to CyberSource specifications.
 
 ## 📖 Usage
 
@@ -62,19 +82,22 @@ import { Api } from "@tsee9ii/cybersource-rest-client";
 ```typescript
 import { Api } from "@tsee9ii/cybersource-rest-client";
 
-// Configure the API client
+// Configure the API client with HTTP Signature authentication
 const cyberSourceApi = new Api({
   baseUrl: "https://apitest.cybersource.com", // Sandbox
   // baseUrl: "https://api.cybersource.com", // Production
   securityWorker: (securityData: any) => {
-    // Add your authentication configuration here
-    // Return headers for HTTP Signature authentication
+    // HTTP Signature authentication is handled by the NestJS package
+    // For direct usage, implement authentication headers here
     return {
-      // Your authentication headers
+      // Your authentication headers would go here
+      // See the NestJS package for a complete implementation
     };
   },
 });
 ```
+
+**⚠️ Security Note**: For production use, we strongly recommend using the NestJS package (`@tsee9ii/cybersource-nestjs`) which includes built-in HTTP Signature authentication according to CyberSource's security requirements.
 
 ### Example: Process a Payment
 

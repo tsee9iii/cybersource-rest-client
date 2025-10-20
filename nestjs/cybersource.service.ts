@@ -1,6 +1,11 @@
 import { Injectable, Inject, Logger } from "@nestjs/common";
 import { Api } from "@tsee9ii/cybersource-rest-client";
 import { CyberSourceConfig } from "./cybersource.config";
+import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
+
+// Import fetch types for Node.js compatibility
+// @ts-ignore
+import fetch from "node-fetch";
 
 // Type definitions for the main request types - using any for now since types are inline
 export type CreatePaymentRequest = any;
@@ -21,16 +26,62 @@ export class CyberSourceService {
         ? config.basePath || "https://apitest.cybersource.com"
         : "https://api.cybersource.com";
 
-    // Initialize the single API instance
+    // Initialize the single API instance with HTTP Signature authentication
     this.api = new Api({
       baseUrl,
-      // Configure authentication if needed
-      securityWorker: (securityData: any) => {
+      // Configure HTTP Signature authentication
+      securityWorker: () => {
+        // Note: The actual signature generation happens per-request in the custom fetch
+        // This securityWorker is called for each request automatically
         return {};
+      },
+      // Custom fetch implementation with CyberSource authentication
+      customFetch: async (url: string, init?: any) => {
+        const method = init?.method || "GET";
+        const body = init?.body;
+
+        // Extract host and path from the full URL
+        const host = CyberSourceAuthUtil.extractHost(baseUrl);
+        const path = CyberSourceAuthUtil.extractPath(url);
+
+        // Generate authentication headers
+        const authHeaders = CyberSourceAuthUtil.generateAuthHeaders({
+          merchantId: this.config.merchantId,
+          apiKey: this.config.apiKey,
+          sharedSecretKey: this.config.sharedSecretKey,
+          method,
+          path,
+          body,
+          host,
+        });
+
+        // Merge authentication headers with existing headers
+        const headers = {
+          ...init?.headers,
+          ...authHeaders,
+        };
+
+        // Log authentication headers in debug mode (without sensitive data)
+        this.logger.debug("CyberSource request authentication", {
+          method,
+          path,
+          merchantId: this.config.merchantId,
+          hasDigest: !!authHeaders.digest,
+          hasSignature: !!authHeaders.signature,
+        });
+
+        // Make the request with authentication headers
+        return fetch(url, {
+          ...init,
+          headers,
+        });
       },
     });
 
     this.logger.log(`CyberSource client initialized with base URL: ${baseUrl}`);
+    this.logger.log(
+      `Authentication configured for merchant: ${config.merchantId}`
+    );
   }
 
   // Payment Processing Methods

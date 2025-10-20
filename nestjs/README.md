@@ -1,6 +1,14 @@
 # @tsee9ii/cybersource-nestjs
 
-A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.
+A NestJS module for integrating with the CyberSource REST API with built-in HTTP Signature authentication.
+
+## Features
+
+- 🔐 **Built-in Security**: Automatic HTTP Signature authentication as per CyberSource requirements
+- 🏗️ **NestJS Integration**: Seamless integration with NestJS dependency injection
+- 🛡️ **Type Safety**: Full TypeScript support
+- 📝 **Easy Configuration**: Simple configuration through NestJS module system
+- 🔄 **Automatic Headers**: Handles all required security headers automatically
 
 ## Installation
 
