@@ -40,4 +40,9 @@ export interface CyberSourceModuleOptions {
     ...args: any[]
   ) => CyberSourceConfig | Promise<CyberSourceConfig>;
   inject?: any[];
+  /**
+   * Whether to register the module globally
+   * @default false
+   */
+  isGlobal?: boolean;
 }

@@ -1,12 +1,16 @@
-import { Module, DynamicModule } from "@nestjs/common";
+import { Module, DynamicModule, Global } from "@nestjs/common";
 import { CyberSourceService } from "./cybersource.service";
-import { CyberSourceConfig } from "./cybersource.config";
+import {
+  CyberSourceConfig,
+  CyberSourceModuleOptions,
+} from "./cybersource.config";
 
 @Module({})
 export class CyberSourceModule {
-  static forRoot(config: CyberSourceConfig): DynamicModule {
+  static forRoot(config: CyberSourceConfig, isGlobal = false): DynamicModule {
     return {
       module: CyberSourceModule,
+      global: isGlobal,
       providers: [
         {
           provide: "CYBERSOURCE_CONFIG",
@@ -23,9 +27,11 @@ export class CyberSourceModule {
       ...args: any[]
     ) => CyberSourceConfig | Promise<CyberSourceConfig>;
     inject?: any[];
+    isGlobal?: boolean;
   }): DynamicModule {
     return {
       module: CyberSourceModule,
+      global: options.isGlobal || false,
       providers: [
         {
           provide: "CYBERSOURCE_CONFIG",
@@ -36,5 +42,19 @@ export class CyberSourceModule {
       ],
       exports: [CyberSourceService],
     };
+  }
+
+  // Helper method to register as global module
+  static forRootGlobal(config: CyberSourceConfig): DynamicModule {
+    return this.forRoot(config, true);
+  }
+
+  static forRootAsyncGlobal(options: {
+    useFactory: (
+      ...args: any[]
+    ) => CyberSourceConfig | Promise<CyberSourceConfig>;
+    inject?: any[];
+  }): DynamicModule {
+    return this.forRootAsync({ ...options, isGlobal: true });
   }
 }

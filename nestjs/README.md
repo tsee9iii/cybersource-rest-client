@@ -69,7 +69,101 @@ import { CyberSourceModule } from "@infinitesolutions/cybersource-nestjs";
 export class AppModule {}
 ```
 
-### 3. Inject and Use the Service
+### 3. Global Module Configuration (Recommended)
+
+Register the module globally to make `CyberSourceService` available in all modules without importing:
+
+```typescript
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { CyberSourceModule } from "@infinitesolutions/cybersource-nestjs";
+
+@Module({
+  imports: [
+    ConfigModule.forRoot(),
+    // Option 1: Using forRootGlobal helper method
+    CyberSourceModule.forRootGlobal({
+      merchantId: "your-merchant-id",
+      apiKey: "your-api-key",
+      sharedSecretKey: "your-shared-secret",
+      sandbox: true,
+    }),
+
+    // Option 2: Using forRoot with isGlobal parameter
+    CyberSourceModule.forRoot(
+      {
+        merchantId: "your-merchant-id",
+        apiKey: "your-api-key",
+        sharedSecretKey: "your-shared-secret",
+        sandbox: true,
+      },
+      true
+    ), // isGlobal = true
+
+    // Option 3: Using forRootAsyncGlobal for async configuration
+    CyberSourceModule.forRootAsyncGlobal({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        merchantId: configService.get("CYBERSOURCE_MERCHANT_ID"),
+        apiKey: configService.get("CYBERSOURCE_API_KEY"),
+        sharedSecretKey: configService.get("CYBERSOURCE_SHARED_SECRET"),
+        sandbox: configService.get("NODE_ENV") !== "production",
+      }),
+    }),
+
+    // Option 4: Using forRootAsync with isGlobal option
+    CyberSourceModule.forRootAsync({
+      inject: [ConfigService],
+      isGlobal: true, // Makes module global
+      useFactory: (configService: ConfigService) => ({
+        merchantId: configService.get("CYBERSOURCE_MERCHANT_ID"),
+        apiKey: configService.get("CYBERSOURCE_API_KEY"),
+        sharedSecretKey: configService.get("CYBERSOURCE_SHARED_SECRET"),
+        sandbox: configService.get("NODE_ENV") !== "production",
+      }),
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+**Benefits of Global Registration:**
+
+- ✅ No need to import `CyberSourceModule` in feature modules
+- ✅ `CyberSourceService` available everywhere by injection
+- ✅ Cleaner module imports
+- ✅ Single configuration point
+
+### 4. Using in Feature Modules (Global Registration)
+
+When registered globally, you can directly inject the service without importing the module:
+
+```typescript
+// feature.module.ts
+import { Module } from "@nestjs/common";
+import { PaymentService } from "./payment.service";
+
+@Module({
+  // No need to import CyberSourceModule when it's global
+  providers: [PaymentService],
+})
+export class FeatureModule {}
+
+// payment.service.ts
+import { Injectable } from "@nestjs/common";
+import { CyberSourceService } from "@infinitesolutions/cybersource-nestjs";
+
+@Injectable()
+export class PaymentService {
+  constructor(private readonly cyberSource: CyberSourceService) {}
+
+  async processPayment() {
+    // Use cyberSource service directly
+  }
+}
+```
+
+### 5. Inject and Use the Service
 
 ```typescript
 import { Injectable } from "@nestjs/common";

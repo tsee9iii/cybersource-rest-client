@@ -3,10 +3,6 @@ import { Api } from "@infinitesolutions/cybersource-rest-client";
 import { CyberSourceConfig } from "./cybersource.config";
 import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
 
-// Import fetch types for Node.js compatibility
-// @ts-ignore
-import fetch from "node-fetch";
-
 // Type definitions for the main request types - using any for now since types are inline
 export type CreatePaymentRequest = any;
 export type CapturePaymentRequest = any;
@@ -36,7 +32,11 @@ export class CyberSourceService {
         return {};
       },
       // Custom fetch implementation with CyberSource authentication
-      customFetch: async (url: string, init?: any) => {
+      customFetch: async (
+        input: string | URL | Request,
+        init?: RequestInit
+      ) => {
+        const url = typeof input === "string" ? input : input.toString();
         const method = init?.method || "GET";
         const body = init?.body;
 
@@ -71,7 +71,7 @@ export class CyberSourceService {
         });
 
         // Make the request with authentication headers
-        return fetch(url, {
+        return (globalThis as any).fetch(url, {
           ...init,
           headers,
         });
