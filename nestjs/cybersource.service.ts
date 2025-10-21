@@ -3,11 +3,19 @@ import { Api } from "@infinitesolutions/cybersource-rest-client";
 import { CyberSourceConfig } from "./cybersource.config";
 import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
 
-// Type definitions for the main request types - using any for now since types are inline
-export type CreatePaymentRequest = any;
-export type CapturePaymentRequest = any;
-export type RefundPaymentRequest = any;
-export type VoidPaymentRequest = any;
+// Import our DTOs for type safety
+import {
+  CreatePaymentDto,
+  CapturePaymentDto,
+  RefundPaymentDto,
+  VoidPaymentDto,
+} from "./dto/payment.dto";
+
+// Legacy type exports for backward compatibility
+export type CreatePaymentRequest = CreatePaymentDto;
+export type CapturePaymentRequest = CapturePaymentDto;
+export type RefundPaymentRequest = RefundPaymentDto;
+export type VoidPaymentRequest = VoidPaymentDto;
 
 @Injectable()
 export class CyberSourceService {
@@ -85,7 +93,7 @@ export class CyberSourceService {
   }
 
   // Payment Processing Methods
-  async createPayment(request: CreatePaymentRequest) {
+  async createPayment(request: CreatePaymentDto) {
     try {
       this.logger.debug("Creating payment", {
         amount: request.orderInformation?.amountDetails?.totalAmount,
@@ -102,7 +110,7 @@ export class CyberSourceService {
     }
   }
 
-  async capturePayment(id: string, request: CapturePaymentRequest) {
+  async capturePayment(id: string, request: CapturePaymentDto) {
     try {
       this.logger.debug("Capturing payment", { paymentId: id });
       const response = await this.api.pts.capturePayment(id, request);
@@ -117,7 +125,7 @@ export class CyberSourceService {
     }
   }
 
-  async refundPayment(id: string, request: RefundPaymentRequest) {
+  async refundPayment(id: string, request: RefundPaymentDto) {
     try {
       this.logger.debug("Refunding payment", { paymentId: id });
       const response = await this.api.pts.refundPayment(id, request);
@@ -132,7 +140,7 @@ export class CyberSourceService {
     }
   }
 
-  async voidPayment(id: string, request: VoidPaymentRequest) {
+  async voidPayment(id: string, request: VoidPaymentDto) {
     try {
       this.logger.debug("Voiding payment", { paymentId: id });
       const response = await this.api.pts.voidPayment(id, request);

@@ -163,7 +163,294 @@ export class PaymentService {
 }
 ```
 
-### 5. Inject and Use the Service
+### 5. Inject and Use Services
+
+#### Using Specialized Services (Recommended)
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import {
+  PaymentService,
+  TokenService,
+  VerificationService,
+} from "@infinitesolutions/cybersource-nestjs";
+
+@Injectable()
+export class PaymentProcessor {
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly tokenService: TokenService,
+    private readonly verificationService: VerificationService
+  ) {}
+
+  async processPayment(paymentData: any) {
+    // Quick payment processing
+    const result = await this.paymentService.quickPayment({
+      amount: paymentData.amount,
+      currency: "USD",
+      cardNumber: paymentData.cardNumber,
+      expirationMonth: paymentData.expMonth,
+      expirationYear: paymentData.expYear,
+      cvv: paymentData.cvv,
+      firstName: paymentData.firstName,
+      lastName: paymentData.lastName,
+      email: paymentData.email,
+      address: paymentData.address,
+      city: paymentData.city,
+      state: paymentData.state,
+      zipCode: paymentData.zipCode,
+      country: "US",
+      capture: true,
+    });
+
+    return result;
+  }
+}
+```
+
+#### Customer Management Examples
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import {
+  CustomerService,
+  CustomerCreateDto,
+  CustomerUpdateDto,
+  ShippingAddressCreateDto,
+} from "@infinitesolutions/cybersource-nestjs";
+
+@Injectable()
+export class CustomerManagementService {
+  constructor(private readonly customerService: CustomerService) {}
+
+  // Create a new customer with billing and shipping information
+  async createNewCustomer(customerData: any) {
+    const customerRequest: CustomerCreateDto = {
+      buyerInformation: {
+        merchantCustomerId: customerData.merchantCustomerId,
+        email: customerData.email,
+      },
+      clientReferenceInformation: {
+        code: customerData.referenceCode,
+      },
+      paymentInformation: {
+        card: {
+          expirationYear: customerData.expirationYear,
+          expirationMonth: customerData.expirationMonth,
+          number: customerData.cardNumber,
+        },
+      },
+      billTo: {
+        firstName: customerData.firstName,
+        lastName: customerData.lastName,
+        address1: customerData.address1,
+        locality: customerData.city,
+        administrativeArea: customerData.state,
+        postalCode: customerData.zipCode,
+        country: customerData.country,
+        email: customerData.email,
+        phoneNumber: customerData.phone,
+      },
+    };
+
+    try {
+      const customer = await this.customerService.createCustomer(
+        customerRequest
+      );
+      console.log("Customer created:", customer.id);
+      return customer;
+    } catch (error) {
+      console.error("Error creating customer:", error);
+      throw error;
+    }
+  }
+
+  // Get customer details
+  async getCustomerDetails(customerId: string) {
+    try {
+      const customer = await this.customerService.getCustomer(customerId);
+      return customer;
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+      throw error;
+    }
+  }
+
+  // Update customer information
+  async updateCustomerInfo(customerId: string, updates: any) {
+    const updateRequest: CustomerUpdateDto = {
+      buyerInformation: {
+        email: updates.email,
+      },
+      billTo: {
+        firstName: updates.firstName,
+        lastName: updates.lastName,
+        email: updates.email,
+        phoneNumber: updates.phone,
+      },
+    };
+
+    try {
+      const updatedCustomer = await this.customerService.updateCustomer(
+        customerId,
+        updateRequest
+      );
+      return updatedCustomer;
+    } catch (error) {
+      console.error("Error updating customer:", error);
+      throw error;
+    }
+  }
+
+  // Add a shipping address to customer
+  async addShippingAddress(customerId: string, shippingData: any) {
+    const shippingRequest: ShippingAddressCreateDto = {
+      default: shippingData.isDefault || false,
+      shipTo: {
+        firstName: shippingData.firstName,
+        lastName: shippingData.lastName,
+        company: shippingData.company,
+        address1: shippingData.address1,
+        address2: shippingData.address2,
+        locality: shippingData.city,
+        administrativeArea: shippingData.state,
+        postalCode: shippingData.zipCode,
+        country: shippingData.country,
+        email: shippingData.email,
+        phoneNumber: shippingData.phone,
+      },
+    };
+
+    try {
+      const shippingAddress = await this.customerService.createShippingAddress(
+        customerId,
+        shippingRequest
+      );
+      console.log("Shipping address created:", shippingAddress.id);
+      return shippingAddress;
+    } catch (error) {
+      console.error("Error creating shipping address:", error);
+      throw error;
+    }
+  }
+
+  // Get all shipping addresses for a customer
+  async getCustomerShippingAddresses(customerId: string, page = 0, limit = 20) {
+    try {
+      const addresses = await this.customerService.getShippingAddresses(
+        customerId,
+        { offset: page * limit, limit }
+      );
+      return addresses;
+    } catch (error) {
+      console.error("Error fetching shipping addresses:", error);
+      throw error;
+    }
+  }
+
+  // Update a shipping address
+  async updateShippingAddress(
+    customerId: string,
+    addressId: string,
+    updates: any
+  ) {
+    const updateRequest = {
+      default: updates.isDefault,
+      shipTo: {
+        firstName: updates.firstName,
+        lastName: updates.lastName,
+        address1: updates.address1,
+        locality: updates.city,
+        administrativeArea: updates.state,
+        postalCode: updates.zipCode,
+        country: updates.country,
+        email: updates.email,
+        phoneNumber: updates.phone,
+      },
+    };
+
+    try {
+      const updatedAddress = await this.customerService.updateShippingAddress(
+        customerId,
+        addressId,
+        updateRequest
+      );
+      return updatedAddress;
+    } catch (error) {
+      console.error("Error updating shipping address:", error);
+      throw error;
+    }
+  }
+
+  // Delete a customer and all associated data
+  async removeCustomer(customerId: string) {
+    try {
+      await this.customerService.deleteCustomer(customerId);
+      console.log("Customer deleted successfully");
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+      throw error;
+    }
+  }
+
+  // Complete customer lifecycle example
+  async customerLifecycleExample() {
+    try {
+      // 1. Create customer
+      const customer = await this.createNewCustomer({
+        merchantCustomerId: "CUST_001",
+        email: "customer@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        address1: "123 Main St",
+        city: "San Francisco",
+        state: "CA",
+        zipCode: "94102",
+        country: "US",
+        phone: "+1-555-123-4567",
+        cardNumber: "4111111111111111",
+        expirationMonth: "12",
+        expirationYear: "2025",
+        referenceCode: "ORDER_12345",
+      });
+
+      // 2. Add additional shipping address
+      await this.addShippingAddress(customer.id!, {
+        firstName: "John",
+        lastName: "Doe",
+        company: "Acme Corp",
+        address1: "456 Business Ave",
+        city: "New York",
+        state: "NY",
+        zipCode: "10001",
+        country: "US",
+        email: "john.doe@acme.com",
+        phone: "+1-555-987-6543",
+        isDefault: false,
+      });
+
+      // 3. Get all shipping addresses
+      const addresses = await this.getCustomerShippingAddresses(customer.id!);
+      console.log(`Customer has ${addresses.count} shipping addresses`);
+
+      // 4. Update customer email
+      await this.updateCustomerInfo(customer.id!, {
+        email: "john.doe.updated@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        phone: "+1-555-123-4567",
+      });
+
+      return customer;
+    } catch (error) {
+      console.error("Customer lifecycle error:", error);
+      throw error;
+    }
+  }
+}
+```
+
+#### Using Base CyberSourceService
 
 ```typescript
 import { Injectable } from "@nestjs/common";
@@ -284,33 +571,60 @@ export class AdvancedPaymentService {
 }
 ```
 
-## Available APIs
+## Available Services
 
-The service provides access to all CyberSource APIs through both high-level methods and direct API access:
+### PaymentService (Specialized Payment Processing)
 
-### High-Level Methods
-
-- `createPayment(request)` - Process payments
-- `capturePayment(id, request)` - Capture authorized payments
+- `createPayment(request)` - Create a new payment with full type safety
+- `authorizePayment(request)` - Authorization-only transactions
+- `salePayment(request)` - Sale (auth + capture) transactions
+- `capturePayment(id, request)` - Capture an authorized payment
 - `refundPayment(id, request)` - Process refunds
 - `voidPayment(id, request)` - Void transactions
+- `incrementAuth(id, request)` - Increase authorization amount
+- `quickPayment(options)` - Simplified payment with minimal data
 
-### Direct API Access
+### CustomerService (Customer Management)
 
-- `cyberSource.payments` - PaymentsApi
-- `cyberSource.capture` - CaptureApi
-- `cyberSource.refund` - RefundApi
-- `cyberSource.void` - VoidApi
-- `cyberSource.customer` - CustomerApi
-- `cyberSource.paymentTokens` - PaymentTokensApi
-- `cyberSource.verification` - VerificationApi
-- `cyberSource.payerAuth` - PayerAuthenticationApi
-- `cyberSource.decisionManager` - DecisionManagerApi
-- `cyberSource.reports` - ReportsApi
-- `cyberSource.binLookup` - BinLookupApi
-- `cyberSource.taxes` - TaxesApi
-- `cyberSource.subscriptions` - SubscriptionsApi
-- `cyberSource.plans` - PlansApi
+- `createCustomer(request)` - Create customer profiles
+- `getCustomer(customerId)` - Retrieve customer information
+- `updateCustomer(customerId, request)` - Update customer data
+- `deleteCustomer(customerId)` - Remove customer profiles
+- `createShippingAddress(customerId, request)` - Add shipping addresses
+- `getShippingAddresses(customerId, pagination?)` - List customer shipping addresses
+- `getShippingAddress(customerId, addressId)` - Get specific shipping address
+- `updateShippingAddress(customerId, addressId, request)` - Update shipping address
+- `deleteShippingAddress(customerId, addressId)` - Remove shipping address
+
+### TokenService (Token Management)
+
+- `createToken(request)` - Create payment tokens
+- `createCustomer(request)` - Create customer profiles
+- `getCustomer(customerId)` - Retrieve customer information
+- `updateCustomer(customerId, request)` - Update customer data
+- `deleteCustomer(customerId)` - Remove customer profiles
+- `createPaymentInstrument(customerId, request)` - Add payment methods
+- `getPaymentInstrument(customerId, instrumentId)` - Get token details
+- `deletePaymentInstrument(customerId, instrumentId)` - Remove tokens
+
+### VerificationService (Card Verification)
+
+- `verifyCard(request)` - Verify card without payment
+- `verifyAddress(request)` - Address Verification Service (AVS)
+- `verifyCVV(request)` - CVV verification
+- `quickCardVerification(options)` - Simple card validation
+- `validateCardNumber(cardNumber)` - Luhn algorithm validation
+- `identifyCardType(cardNumber)` - Detect card brand
+- `validateExpirationDate(month, year)` - Expiry validation
+
+### CyberSourceService (Base Service)
+
+- `createPayment(request)` - Core payment processing
+- `capturePayment(id, request)` - Core capture functionality
+- `refundPayment(id, request)` - Core refund processing
+- `voidPayment(id, request)` - Core void functionality
+- `apiClient` - Direct access to underlying API
+- Organized endpoint access: `payments`, `tms`, `risk`, `reporting`
 
 ## Configuration Options
 

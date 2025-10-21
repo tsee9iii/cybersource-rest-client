@@ -1,9 +1,14 @@
-import { Module, DynamicModule, Global } from "@nestjs/common";
+import { Module, DynamicModule } from "@nestjs/common";
 import { CyberSourceService } from "./cybersource.service";
-import {
-  CyberSourceConfig,
-  CyberSourceModuleOptions,
-} from "./cybersource.config";
+import { CyberSourceConfig } from "./cybersource.config";
+import { PaymentService } from "./services/payment.service";
+import { TokenService } from "./services/token.service";
+import { VerificationService } from "./services/verification.service";
+import { CustomerService } from "./services/customer.service";
+import { CustomerPaymentInstrumentService } from "./services/customer-payment-instrument.service";
+import { PaymentInstrumentService } from "./services/payment-instrument.service";
+import { InstrumentIdentifierService } from "./services/instrument-identifier.service";
+import { TokenizedCardService } from "./services/tokenized-card.service";
 
 @Module({})
 export class CyberSourceModule {
@@ -17,44 +22,26 @@ export class CyberSourceModule {
           useValue: config,
         },
         CyberSourceService,
+        PaymentService,
+        TokenService,
+        VerificationService,
+        CustomerService,
+        CustomerPaymentInstrumentService,
+        PaymentInstrumentService,
+        InstrumentIdentifierService,
+        TokenizedCardService,
       ],
-      exports: [CyberSourceService],
-    };
-  }
-
-  static forRootAsync(options: {
-    useFactory: (
-      ...args: any[]
-    ) => CyberSourceConfig | Promise<CyberSourceConfig>;
-    inject?: any[];
-    isGlobal?: boolean;
-  }): DynamicModule {
-    return {
-      module: CyberSourceModule,
-      global: options.isGlobal || false,
-      providers: [
-        {
-          provide: "CYBERSOURCE_CONFIG",
-          useFactory: options.useFactory,
-          inject: options.inject || [],
-        },
+      exports: [
         CyberSourceService,
+        PaymentService,
+        TokenService,
+        VerificationService,
+        CustomerService,
+        CustomerPaymentInstrumentService,
+        PaymentInstrumentService,
+        InstrumentIdentifierService,
+        TokenizedCardService,
       ],
-      exports: [CyberSourceService],
     };
-  }
-
-  // Helper method to register as global module
-  static forRootGlobal(config: CyberSourceConfig): DynamicModule {
-    return this.forRoot(config, true);
-  }
-
-  static forRootAsyncGlobal(options: {
-    useFactory: (
-      ...args: any[]
-    ) => CyberSourceConfig | Promise<CyberSourceConfig>;
-    inject?: any[];
-  }): DynamicModule {
-    return this.forRootAsync({ ...options, isGlobal: true });
   }
 }
