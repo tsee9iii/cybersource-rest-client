@@ -1,11 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CyberSourceService } from "../cybersource.service";
+import { BaseCyberSourceService } from "./base.service";
 import {
   CustomerCreateDto,
   CustomerUpdateDto,
   CustomerResponseDto,
-  CustomerListResponseDto,
-  CustomerPaginationOptionsDto,
 } from "../dto/customer.dto";
 import {
   ShippingAddressCreateDto,
@@ -16,10 +15,10 @@ import {
 } from "../dto/shipping-address.dto";
 
 @Injectable()
-export class CustomerService {
-  private readonly logger = new Logger(CustomerService.name);
-
-  constructor(private readonly cyberSourceService: CyberSourceService) {}
+export class CustomerService extends BaseCyberSourceService {
+  constructor(cyberSourceService: CyberSourceService) {
+    super(cyberSourceService, CustomerService.name);
+  }
 
   /**
    * Create a new customer
@@ -29,19 +28,11 @@ export class CustomerService {
   async createCustomer(
     createCustomerDto: CustomerCreateDto
   ): Promise<CustomerResponseDto> {
-    try {
-      this.logger.log("Creating customer");
-      const response = await this.cyberSourceService.tms.postCustomer(
-        createCustomerDto
-      );
-      this.logger.log(
-        `Customer created successfully with ID: ${response.data?.id}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error("Error creating customer:", error);
-      throw error;
-    }
+    return this.executeApiCall(
+      "Creating customer",
+      () => this.cyberSourceService.tms.postCustomer(createCustomerDto),
+      this.sanitizeRequestForLogging({ createCustomerDto })
+    );
   }
 
   /**
@@ -50,17 +41,11 @@ export class CustomerService {
    * @returns Promise<CustomerResponseDto>
    */
   async getCustomer(customerId: string): Promise<CustomerResponseDto> {
-    try {
-      this.logger.log(`Retrieving customer: ${customerId}`);
-      const response = await this.cyberSourceService.tms.getCustomer(
-        customerId
-      );
-      this.logger.log(`Customer retrieved successfully: ${customerId}`);
-      return response.data;
-    } catch (error) {
-      this.logger.error(`Error retrieving customer ${customerId}:`, error);
-      throw error;
-    }
+    return this.executeApiCall(
+      "Retrieving customer",
+      () => this.cyberSourceService.tms.getCustomer(customerId),
+      { customerId }
+    );
   }
 
   /**
@@ -73,18 +58,15 @@ export class CustomerService {
     customerId: string,
     updateCustomerDto: CustomerUpdateDto
   ): Promise<CustomerResponseDto> {
-    try {
-      this.logger.log(`Updating customer: ${customerId}`);
-      const response = await this.cyberSourceService.tms.patchCustomer(
-        customerId,
-        updateCustomerDto
-      );
-      this.logger.log(`Customer updated successfully: ${customerId}`);
-      return response.data;
-    } catch (error) {
-      this.logger.error(`Error updating customer ${customerId}:`, error);
-      throw error;
-    }
+    return this.executeApiCall(
+      "Updating customer",
+      () =>
+        this.cyberSourceService.tms.patchCustomer(
+          customerId,
+          updateCustomerDto
+        ),
+      { customerId, ...this.sanitizeRequestForLogging({ updateCustomerDto }) }
+    );
   }
 
   /**
@@ -93,14 +75,11 @@ export class CustomerService {
    * @returns Promise<void>
    */
   async deleteCustomer(customerId: string): Promise<void> {
-    try {
-      this.logger.log(`Deleting customer: ${customerId}`);
-      await this.cyberSourceService.tms.deleteCustomer(customerId);
-      this.logger.log(`Customer deleted successfully: ${customerId}`);
-    } catch (error) {
-      this.logger.error(`Error deleting customer ${customerId}:`, error);
-      throw error;
-    }
+    return this.executeVoidApiCall(
+      "Deleting customer",
+      () => this.cyberSourceService.tms.deleteCustomer(customerId),
+      { customerId }
+    );
   }
 
   /**
@@ -113,24 +92,18 @@ export class CustomerService {
     customerId: string,
     createShippingAddressDto: ShippingAddressCreateDto
   ): Promise<ShippingAddressResponseDto> {
-    try {
-      this.logger.log(`Creating shipping address for customer: ${customerId}`);
-      const response =
-        await this.cyberSourceService.tms.postCustomerShippingAddress(
+    return this.executeApiCall(
+      "Creating shipping address for customer",
+      () =>
+        this.cyberSourceService.tms.postCustomerShippingAddress(
           customerId,
           createShippingAddressDto
-        );
-      this.logger.log(
-        `Shipping address created successfully for customer ${customerId} with ID: ${response.data?.id}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error creating shipping address for customer ${customerId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      {
+        customerId,
+        ...this.sanitizeRequestForLogging({ createShippingAddressDto }),
+      }
+    );
   }
 
   /**
@@ -143,26 +116,15 @@ export class CustomerService {
     customerId: string,
     pagination?: ShippingAddressPaginationOptionsDto
   ): Promise<ShippingAddressListResponseDto> {
-    try {
-      this.logger.log(
-        `Retrieving shipping addresses for customer: ${customerId}`
-      );
-      const response =
-        await this.cyberSourceService.tms.getCustomerShippingAddressesList(
+    return this.executeApiCall(
+      "Retrieving shipping addresses for customer",
+      () =>
+        this.cyberSourceService.tms.getCustomerShippingAddressesList(
           customerId,
           pagination
-        );
-      this.logger.log(
-        `Shipping addresses retrieved successfully for customer ${customerId}. Count: ${response.data?.count}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error retrieving shipping addresses for customer ${customerId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      { customerId, pagination }
+    );
   }
 
   /**
@@ -175,26 +137,15 @@ export class CustomerService {
     customerId: string,
     shippingAddressId: string
   ): Promise<ShippingAddressResponseDto> {
-    try {
-      this.logger.log(
-        `Retrieving shipping address ${shippingAddressId} for customer: ${customerId}`
-      );
-      const response =
-        await this.cyberSourceService.tms.getCustomerShippingAddress(
+    return this.executeApiCall(
+      "Retrieving shipping address for customer",
+      () =>
+        this.cyberSourceService.tms.getCustomerShippingAddress(
           customerId,
           shippingAddressId
-        );
-      this.logger.log(
-        `Shipping address ${shippingAddressId} retrieved successfully for customer ${customerId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error retrieving shipping address ${shippingAddressId} for customer ${customerId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      { customerId, shippingAddressId }
+    );
   }
 
   /**
@@ -209,27 +160,20 @@ export class CustomerService {
     shippingAddressId: string,
     updateShippingAddressDto: ShippingAddressUpdateDto
   ): Promise<ShippingAddressResponseDto> {
-    try {
-      this.logger.log(
-        `Updating shipping address ${shippingAddressId} for customer: ${customerId}`
-      );
-      const response =
-        await this.cyberSourceService.tms.patchCustomersShippingAddress(
+    return this.executeApiCall(
+      "Updating shipping address for customer",
+      () =>
+        this.cyberSourceService.tms.patchCustomersShippingAddress(
           customerId,
           shippingAddressId,
           updateShippingAddressDto
-        );
-      this.logger.log(
-        `Shipping address ${shippingAddressId} updated successfully for customer ${customerId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error updating shipping address ${shippingAddressId} for customer ${customerId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      {
+        customerId,
+        shippingAddressId,
+        ...this.sanitizeRequestForLogging({ updateShippingAddressDto }),
+      }
+    );
   }
 
   /**
@@ -242,23 +186,14 @@ export class CustomerService {
     customerId: string,
     shippingAddressId: string
   ): Promise<void> {
-    try {
-      this.logger.log(
-        `Deleting shipping address ${shippingAddressId} for customer: ${customerId}`
-      );
-      await this.cyberSourceService.tms.deleteCustomerShippingAddress(
-        customerId,
-        shippingAddressId
-      );
-      this.logger.log(
-        `Shipping address ${shippingAddressId} deleted successfully for customer ${customerId}`
-      );
-    } catch (error) {
-      this.logger.error(
-        `Error deleting shipping address ${shippingAddressId} for customer ${customerId}:`,
-        error
-      );
-      throw error;
-    }
+    return this.executeVoidApiCall(
+      "Deleting shipping address for customer",
+      () =>
+        this.cyberSourceService.tms.deleteCustomerShippingAddress(
+          customerId,
+          shippingAddressId
+        ),
+      { customerId, shippingAddressId }
+    );
   }
 }

@@ -5,7 +5,6 @@ import { PaymentService } from "./services/payment.service";
 import { TokenService } from "./services/token.service";
 import { VerificationService } from "./services/verification.service";
 import { CustomerService } from "./services/customer.service";
-import { CustomerPaymentInstrumentService } from "./services/customer-payment-instrument.service";
 import { PaymentInstrumentService } from "./services/payment-instrument.service";
 import { InstrumentIdentifierService } from "./services/instrument-identifier.service";
 import { TokenizedCardService } from "./services/tokenized-card.service";
@@ -26,7 +25,6 @@ export class CyberSourceModule {
         TokenService,
         VerificationService,
         CustomerService,
-        CustomerPaymentInstrumentService,
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
@@ -37,7 +35,6 @@ export class CyberSourceModule {
         TokenService,
         VerificationService,
         CustomerService,
-        CustomerPaymentInstrumentService,
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
@@ -66,7 +63,6 @@ export class CyberSourceModule {
         TokenService,
         VerificationService,
         CustomerService,
-        CustomerPaymentInstrumentService,
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
@@ -77,7 +73,6 @@ export class CyberSourceModule {
         TokenService,
         VerificationService,
         CustomerService,
-        CustomerPaymentInstrumentService,
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,

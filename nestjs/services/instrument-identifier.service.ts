@@ -1,5 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CyberSourceService } from "../cybersource.service";
+import { BaseCyberSourceService } from "./base.service";
 import {
   InstrumentIdentifierRequest,
   InstrumentIdentifierResponse,
@@ -11,10 +12,10 @@ import {
 } from "../interfaces/payment-instrument.interfaces";
 
 @Injectable()
-export class InstrumentIdentifierService {
-  private readonly logger = new Logger(InstrumentIdentifierService.name);
-
-  constructor(private readonly cyberSourceService: CyberSourceService) {}
+export class InstrumentIdentifierService extends BaseCyberSourceService {
+  constructor(cyberSourceService: CyberSourceService) {
+    super(cyberSourceService, InstrumentIdentifierService.name);
+  }
 
   /**
    * Create an instrument identifier
@@ -24,22 +25,12 @@ export class InstrumentIdentifierService {
   async createInstrumentIdentifier(
     identifierData: InstrumentIdentifierRequest
   ): Promise<InstrumentIdentifierResponse> {
-    try {
-      this.logger.log("Creating instrument identifier");
-
-      const response =
-        await this.cyberSourceService.tms.postInstrumentIdentifier(
-          identifierData
-        );
-
-      this.logger.log(
-        `Instrument identifier created successfully with ID: ${response.data?.id}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error("Error creating instrument identifier:", error);
-      throw error;
-    }
+    return this.executeApiCall(
+      "Creating instrument identifier",
+      () =>
+        this.cyberSourceService.tms.postInstrumentIdentifier(identifierData),
+      this.sanitizeRequestForLogging({ identifierData })
+    );
   }
 
   /**
@@ -50,27 +41,14 @@ export class InstrumentIdentifierService {
   async getInstrumentIdentifier(
     instrumentIdentifierId: string
   ): Promise<InstrumentIdentifierResponse> {
-    try {
-      this.logger.log(
-        `Retrieving instrument identifier: ${instrumentIdentifierId}`
-      );
-
-      const response =
-        await this.cyberSourceService.tms.getInstrumentIdentifier(
+    return this.executeApiCall(
+      "Retrieving instrument identifier",
+      () =>
+        this.cyberSourceService.tms.getInstrumentIdentifier(
           instrumentIdentifierId
-        );
-
-      this.logger.log(
-        `Instrument identifier retrieved successfully: ${instrumentIdentifierId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error retrieving instrument identifier ${instrumentIdentifierId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      { instrumentIdentifierId }
+    );
   }
 
   /**
@@ -83,28 +61,18 @@ export class InstrumentIdentifierService {
     instrumentIdentifierId: string,
     updateData: InstrumentIdentifierUpdateRequest
   ): Promise<InstrumentIdentifierResponse> {
-    try {
-      this.logger.log(
-        `Updating instrument identifier: ${instrumentIdentifierId}`
-      );
-
-      const response =
-        await this.cyberSourceService.tms.patchInstrumentIdentifier(
+    return this.executeApiCall(
+      "Updating instrument identifier",
+      () =>
+        this.cyberSourceService.tms.patchInstrumentIdentifier(
           instrumentIdentifierId,
           updateData
-        );
-
-      this.logger.log(
-        `Instrument identifier updated successfully: ${instrumentIdentifierId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error updating instrument identifier ${instrumentIdentifierId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      {
+        instrumentIdentifierId,
+        ...this.sanitizeRequestForLogging({ updateData }),
+      }
+    );
   }
 
   /**
@@ -115,25 +83,14 @@ export class InstrumentIdentifierService {
   async deleteInstrumentIdentifier(
     instrumentIdentifierId: string
   ): Promise<void> {
-    try {
-      this.logger.log(
-        `Deleting instrument identifier: ${instrumentIdentifierId}`
-      );
-
-      await this.cyberSourceService.tms.deleteInstrumentIdentifier(
-        instrumentIdentifierId
-      );
-
-      this.logger.log(
-        `Instrument identifier deleted successfully: ${instrumentIdentifierId}`
-      );
-    } catch (error) {
-      this.logger.error(
-        `Error deleting instrument identifier ${instrumentIdentifierId}:`,
-        error
-      );
-      throw error;
-    }
+    return this.executeVoidApiCall(
+      "Deleting instrument identifier",
+      () =>
+        this.cyberSourceService.tms.deleteInstrumentIdentifier(
+          instrumentIdentifierId
+        ),
+      { instrumentIdentifierId }
+    );
   }
 
   /**
@@ -146,30 +103,15 @@ export class InstrumentIdentifierService {
     instrumentIdentifierId: string,
     options?: InstrumentIdentifierListOptions
   ): Promise<InstrumentIdentifierPaymentInstrumentsListResponse> {
-    try {
-      this.logger.log(
-        `Listing payment instruments for instrument identifier: ${instrumentIdentifierId}`
-      );
-
-      const response =
-        await this.cyberSourceService.tms.getInstrumentIdentifierPaymentInstrumentsList(
+    return this.executeApiCall(
+      "Listing payment instruments for instrument identifier",
+      () =>
+        this.cyberSourceService.tms.getInstrumentIdentifierPaymentInstrumentsList(
           instrumentIdentifierId,
           options
-        );
-
-      this.logger.log(
-        `Retrieved ${
-          response.data?._embedded?.paymentInstruments?.length || 0
-        } payment instruments for instrument identifier: ${instrumentIdentifierId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error listing payment instruments for instrument identifier ${instrumentIdentifierId}:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      { instrumentIdentifierId, options }
+    );
   }
 
   /**
@@ -182,27 +124,17 @@ export class InstrumentIdentifierService {
     instrumentIdentifierId: string,
     enrollmentData: InstrumentIdentifierEnrollmentRequest
   ): Promise<InstrumentIdentifierEnrollmentResponse> {
-    try {
-      this.logger.log(
-        `Enrolling instrument identifier for network token: ${instrumentIdentifierId}`
-      );
-
-      const response =
-        await this.cyberSourceService.tms.postInstrumentIdentifierEnrollment(
+    return this.executeApiCall(
+      "Enrolling instrument identifier for network token",
+      () =>
+        this.cyberSourceService.tms.postInstrumentIdentifierEnrollment(
           instrumentIdentifierId,
           enrollmentData
-        );
-
-      this.logger.log(
-        `Instrument identifier enrolled successfully for network token: ${instrumentIdentifierId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error enrolling instrument identifier ${instrumentIdentifierId} for network token:`,
-        error
-      );
-      throw error;
-    }
+        ),
+      {
+        instrumentIdentifierId,
+        ...this.sanitizeRequestForLogging({ enrollmentData }),
+      }
+    );
   }
 }

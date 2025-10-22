@@ -1,18 +1,22 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CyberSourceService } from "../cybersource.service";
+import { BaseCyberSourceService } from "./base.service";
 import {
   PaymentInstrumentRequest,
   PaymentInstrumentResponse,
-  PaymentInstrumentListResponse,
   PaymentInstrumentUpdateRequest,
-  PaymentInstrumentListOptions,
+  CustomerPaymentInstrumentRequest,
+  CustomerPaymentInstrumentResponse,
+  CustomerPaymentInstrumentListResponse,
+  CustomerPaymentInstrumentUpdateRequest,
+  CustomerPaymentInstrumentListOptions,
 } from "../interfaces/payment-instrument.interfaces";
 
 @Injectable()
-export class PaymentInstrumentService {
-  private readonly logger = new Logger(PaymentInstrumentService.name);
-
-  constructor(private readonly cyberSourceService: CyberSourceService) {}
+export class PaymentInstrumentService extends BaseCyberSourceService {
+  constructor(cyberSourceService: CyberSourceService) {
+    super(cyberSourceService, PaymentInstrumentService.name);
+  }
 
   /**
    * Create a standalone payment instrument
@@ -22,21 +26,14 @@ export class PaymentInstrumentService {
   async createPaymentInstrument(
     paymentInstrumentData: PaymentInstrumentRequest
   ): Promise<PaymentInstrumentResponse> {
-    try {
-      this.logger.log("Creating standalone payment instrument");
-
-      const response = await this.cyberSourceService.tms.postPaymentInstrument(
-        paymentInstrumentData
-      );
-
-      this.logger.log(
-        `Payment instrument created successfully with ID: ${response.data?.id}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error("Error creating payment instrument:", error);
-      throw error;
-    }
+    return this.executeApiCall(
+      "Creating standalone payment instrument",
+      () =>
+        this.cyberSourceService.tms.postPaymentInstrument(
+          paymentInstrumentData
+        ),
+      this.sanitizeRequestForLogging({ paymentInstrumentData })
+    );
   }
 
   /**
@@ -47,24 +44,12 @@ export class PaymentInstrumentService {
   async getPaymentInstrument(
     paymentInstrumentId: string
   ): Promise<PaymentInstrumentResponse> {
-    try {
-      this.logger.log(`Retrieving payment instrument: ${paymentInstrumentId}`);
-
-      const response = await this.cyberSourceService.tms.getPaymentInstrument(
-        paymentInstrumentId
-      );
-
-      this.logger.log(
-        `Payment instrument retrieved successfully: ${paymentInstrumentId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error retrieving payment instrument ${paymentInstrumentId}:`,
-        error
-      );
-      throw error;
-    }
+    return this.executeApiCall(
+      "Retrieving payment instrument",
+      () =>
+        this.cyberSourceService.tms.getPaymentInstrument(paymentInstrumentId),
+      { paymentInstrumentId }
+    );
   }
 
   /**
@@ -77,25 +62,15 @@ export class PaymentInstrumentService {
     paymentInstrumentId: string,
     updateData: PaymentInstrumentUpdateRequest
   ): Promise<PaymentInstrumentResponse> {
-    try {
-      this.logger.log(`Updating payment instrument: ${paymentInstrumentId}`);
-
-      const response = await this.cyberSourceService.tms.patchPaymentInstrument(
-        paymentInstrumentId,
-        updateData
-      );
-
-      this.logger.log(
-        `Payment instrument updated successfully: ${paymentInstrumentId}`
-      );
-      return response.data;
-    } catch (error) {
-      this.logger.error(
-        `Error updating payment instrument ${paymentInstrumentId}:`,
-        error
-      );
-      throw error;
-    }
+    return this.executeApiCall(
+      "Updating payment instrument",
+      () =>
+        this.cyberSourceService.tms.patchPaymentInstrument(
+          paymentInstrumentId,
+          updateData
+        ),
+      { paymentInstrumentId, ...this.sanitizeRequestForLogging({ updateData }) }
+    );
   }
 
   /**
@@ -104,22 +79,130 @@ export class PaymentInstrumentService {
    * @returns Promise<void>
    */
   async deletePaymentInstrument(paymentInstrumentId: string): Promise<void> {
-    try {
-      this.logger.log(`Deleting payment instrument: ${paymentInstrumentId}`);
+    return this.executeVoidApiCall(
+      "Deleting payment instrument",
+      () =>
+        this.cyberSourceService.tms.deletePaymentInstrument(
+          paymentInstrumentId
+        ),
+      { paymentInstrumentId }
+    );
+  }
 
-      await this.cyberSourceService.tms.deletePaymentInstrument(
-        paymentInstrumentId
-      );
+  // ===== Customer Payment Instrument Methods =====
 
-      this.logger.log(
-        `Payment instrument deleted successfully: ${paymentInstrumentId}`
-      );
-    } catch (error) {
-      this.logger.error(
-        `Error deleting payment instrument ${paymentInstrumentId}:`,
-        error
-      );
-      throw error;
-    }
+  /**
+   * Create a payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentData Payment instrument data
+   * @returns Promise<CustomerPaymentInstrumentResponse>
+   */
+  async createCustomerPaymentInstrument(
+    customerId: string,
+    paymentInstrumentData: CustomerPaymentInstrumentRequest
+  ): Promise<CustomerPaymentInstrumentResponse> {
+    return this.executeApiCall(
+      "Creating payment instrument for customer",
+      () =>
+        this.cyberSourceService.tms.postCustomerPaymentInstrument(
+          customerId,
+          paymentInstrumentData
+        ),
+      {
+        customerId,
+        ...this.sanitizeRequestForLogging({ paymentInstrumentData }),
+      }
+    );
+  }
+
+  /**
+   * List payment instruments for a customer
+   * @param customerId Customer ID
+   * @param options Pagination and query options
+   * @returns Promise<CustomerPaymentInstrumentListResponse>
+   */
+  async listCustomerPaymentInstruments(
+    customerId: string,
+    options?: CustomerPaymentInstrumentListOptions
+  ): Promise<CustomerPaymentInstrumentListResponse> {
+    return this.executeApiCall(
+      "Retrieving payment instruments for customer",
+      () =>
+        this.cyberSourceService.tms.getCustomerPaymentInstrumentsList(
+          customerId,
+          options
+        ),
+      { customerId, options }
+    );
+  }
+
+  /**
+   * Retrieve a specific payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentId Payment instrument ID
+   * @returns Promise<CustomerPaymentInstrumentResponse>
+   */
+  async getCustomerPaymentInstrument(
+    customerId: string,
+    paymentInstrumentId: string
+  ): Promise<CustomerPaymentInstrumentResponse> {
+    return this.executeApiCall(
+      "Retrieving customer payment instrument",
+      () =>
+        this.cyberSourceService.tms.getCustomerPaymentInstrument(
+          customerId,
+          paymentInstrumentId
+        ),
+      { customerId, paymentInstrumentId }
+    );
+  }
+
+  /**
+   * Update a payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentId Payment instrument ID
+   * @param updateData Updated payment instrument data
+   * @returns Promise<CustomerPaymentInstrumentResponse>
+   */
+  async updateCustomerPaymentInstrument(
+    customerId: string,
+    paymentInstrumentId: string,
+    updateData: CustomerPaymentInstrumentUpdateRequest
+  ): Promise<CustomerPaymentInstrumentResponse> {
+    return this.executeApiCall(
+      "Updating customer payment instrument",
+      () =>
+        this.cyberSourceService.tms.patchCustomersPaymentInstrument(
+          customerId,
+          paymentInstrumentId,
+          updateData
+        ),
+      {
+        customerId,
+        paymentInstrumentId,
+        ...this.sanitizeRequestForLogging({ updateData }),
+      }
+    );
+  }
+
+  /**
+   * Delete a payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentId Payment instrument ID
+   * @returns Promise<void>
+   */
+  async deleteCustomerPaymentInstrument(
+    customerId: string,
+    paymentInstrumentId: string
+  ): Promise<void> {
+    return this.executeVoidApiCall(
+      "Deleting customer payment instrument",
+      () =>
+        this.cyberSourceService.tms.deleteCustomerPaymentInstrument(
+          customerId,
+          paymentInstrumentId
+        ),
+      { customerId, paymentInstrumentId }
+    );
   }
 }
