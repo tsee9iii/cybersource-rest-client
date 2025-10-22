@@ -12,7 +12,7 @@ export interface CyberSourceAuthParams {
 
 export interface AuthHeaders {
   "v-c-merchant-id": string;
-  "v-c-date": string;
+  date: string;
   digest?: string;
   signature: string;
   host: string;
@@ -40,42 +40,44 @@ export class CyberSourceAuthUtil {
       digest = `SHA-256=${hash}`;
     }
 
-    // Create validation string for signature
+    // Create request target for signature
     const requestTarget = `${method.toLowerCase()} ${path}`;
 
-    // Build validation string (order matters!)
-    const validationStringParts: string[] = [
+    // Build signature string (order is critical!)
+    const signatureStringParts: string[] = [
       `host: ${host}`,
       `date: ${date}`,
       `request-target: ${requestTarget}`,
     ];
 
+    // Add digest if present (POST/PUT/PATCH)
     if (digest) {
-      validationStringParts.push(`digest: ${digest}`);
+      signatureStringParts.push(`digest: ${digest}`);
     }
 
-    validationStringParts.push(`v-c-merchant-id: ${merchantId}`);
+    // Always add merchant ID last
+    signatureStringParts.push(`v-c-merchant-id: ${merchantId}`);
 
-    const validationString = validationStringParts.join("\n");
+    const signatureString = signatureStringParts.join("\n");
 
     // Generate HMAC SHA-256 signature
     const decodedSecret = Buffer.from(sharedSecretKey, "base64");
     const hmac = createHmac("sha256", decodedSecret);
-    hmac.update(validationString, "utf8");
-    const signature = hmac.digest("base64");
+    hmac.update(signatureString, "utf8");
+    const signatureValue = hmac.digest("base64");
 
     // Build headers list for signature header
     const headersList = digest
       ? "host date request-target digest v-c-merchant-id"
       : "host date request-target v-c-merchant-id";
 
-    // Build signature header
-    const signatureHeader = `keyid="${apiKey}", algorithm="HmacSHA256", headers="${headersList}", signature="${signature}"`;
+    // Build signature header value
+    const signatureHeader = `keyid="${apiKey}", algorithm="HmacSHA256", headers="${headersList}", signature="${signatureValue}"`;
 
-    // Return headers object
+    // Build final headers
     const headers: AuthHeaders = {
       "v-c-merchant-id": merchantId,
-      "v-c-date": date,
+      date: date,
       signature: signatureHeader,
       host: host,
       "content-type": "application/json",
