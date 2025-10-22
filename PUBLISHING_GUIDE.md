@@ -7,13 +7,15 @@ Here's your complete guide for pushing to git and publishing with testing includ
 ## 📦 **What's Being Published**
 
 ### ✅ **Core Package Files:**
+
 - `dist/` - Compiled TypeScript
-- `examples/` - Testing and setup guides  
+- `examples/` - Testing and setup guides
 - `tests/` - Complete test suite
 - `README.md` - Package documentation
 - `package.json` - Updated with test scripts
 
 ### ✅ **Testing Suite:**
+
 - **Main Test**: `tests/direct-sandbox-test.ts` - Comprehensive API testing
 - **Debug Tools**: `tests/debug-auth.ts`, `tests/minimal-test.ts`
 - **Setup Script**: `examples/setup-sandbox.sh` - Environment setup
@@ -22,6 +24,7 @@ Here's your complete guide for pushing to git and publishing with testing includ
 ## 🚀 **Step-by-Step Publishing Process**
 
 ### 1. **Add Files to Git**
+
 ```bash
 cd /Users/user/Desktop/Projects/cybersource-rest-client
 
@@ -39,6 +42,7 @@ git add nestjs/examples/usage-examples.service.ts
 ```
 
 ### 2. **Commit Changes**
+
 ```bash
 git commit -m "feat: Add comprehensive testing suite and examples
 
@@ -60,11 +64,13 @@ Features:
 ```
 
 ### 3. **Push to Repository**
+
 ```bash
 git push origin main
 ```
 
 ### 4. **Publish to NPM**
+
 ```bash
 cd nestjs
 npm publish
@@ -73,6 +79,7 @@ npm publish
 ## 🎯 **Benefits of Including Tests**
 
 ### ✅ **For Users:**
+
 - **Easy Validation**: Users can quickly test their credentials
 - **Debug Tools**: Built-in debugging for authentication issues
 - **Setup Automation**: One-click environment setup
@@ -80,6 +87,7 @@ npm publish
 - **Troubleshooting**: Comprehensive error analysis
 
 ### ✅ **For Your Package:**
+
 - **Higher Quality**: Shows your package is thoroughly tested
 - **Better Documentation**: Live examples that actually work
 - **User Confidence**: Users can verify before integration
@@ -114,7 +122,7 @@ After installation, users can run:
 # Quick API testing
 npm run test:sandbox
 
-# Validate service configuration  
+# Validate service configuration
 npm run test:validate
 
 # Debug authentication issues
@@ -137,7 +145,7 @@ git add .
 git commit -m "feat: Add comprehensive testing suite and examples
 
 - Add complete sandbox testing framework with 6 test scripts
-- Include setup automation and comprehensive documentation  
+- Include setup automation and comprehensive documentation
 - Add examples for easy integration and debugging
 - Update package.json with test scripts for users
 - Fix HTTP signature authentication issues
@@ -146,7 +154,7 @@ git commit -m "feat: Add comprehensive testing suite and examples
 Testing Features:
 ✅ Direct API testing with sandbox credentials
 ✅ Authentication debugging and validation
-✅ Service availability checking  
+✅ Service availability checking
 ✅ Content-type and format testing
 ✅ Environment setup automation
 ✅ Complete troubleshooting guides
@@ -163,13 +171,15 @@ cd nestjs && npm publish
 ## 🎉 **Expected Results**
 
 ### **For Users Installing Your Package:**
+
 1. **Easy Setup**: `npm install @infinitesolutions/cybersource-nestjs`
-2. **Quick Testing**: `npm run test:sandbox` 
+2. **Quick Testing**: `npm run test:sandbox`
 3. **Immediate Validation**: Verify their credentials work
 4. **Self-Service Debug**: Built-in troubleshooting tools
 5. **Ready Examples**: Copy-paste integration code
 
 ### **For Package Quality:**
+
 - ⭐ **Professional Package**: Complete with testing & examples
 - 📈 **Higher Adoption**: Users trust packages they can test
 - 🛠️ **Reduced Support**: Self-service debugging tools
@@ -183,7 +193,7 @@ After publishing, users will be able to:
 # Install your package
 npm install @infinitesolutions/cybersource-nestjs
 
-# Test their credentials immediately  
+# Test their credentials immediately
 CYBERSOURCE_MERCHANT_ID=their_id \
 CYBERSOURCE_API_KEY=their_key \
 CYBERSOURCE_SHARED_SECRET=their_secret \
