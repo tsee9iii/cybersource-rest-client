@@ -1,0 +1,1059 @@
+/**
+ * Instrument Identifier DTOs for CyberSource TMS API v2
+ *
+ * Instrument Identifiers represent either a card number or bank account + routing number.
+ * The same token ID is returned for a specific card number or bank account & routing number
+ * allowing the Instrument Identifier ID to be used for cross-channel payment tracking.
+ *
+ * An Instrument Identifier can exist independently but also be associated with:
+ * - Customer Payment Instruments
+ * - Standalone Payment Instruments
+ *
+ * These DTOs cover:
+ * - Create an Instrument Identifier
+ * - Retrieve an Instrument Identifier
+ * - Update an Instrument Identifier
+ * - Delete an Instrument Identifier
+ * - List Payment Instruments for an Instrument Identifier
+ * - Enroll an Instrument Identifier for Payment Network Token
+ */
+
+/**
+ * Base links structure for Instrument Identifiers
+ */
+export interface InstrumentIdentifierLinksDto {
+  readonly self?: {
+    readonly href?: string;
+  };
+  readonly paymentInstruments?: {
+    readonly href?: string;
+  };
+}
+
+/**
+ * Core Instrument Identifier response structure
+ */
+export interface InstrumentIdentifierBaseDto {
+  readonly _links?: InstrumentIdentifierLinksDto;
+  readonly id?: string;
+  readonly object?: "instrumentIdentifier";
+  readonly state?: "ACTIVE" | "CLOSED";
+  type?: "enrollable card" | "enrollable token";
+  readonly metadata?: {
+    readonly creator?: string;
+  };
+}
+
+/**
+ * Token provisioning information for network tokenization
+ */
+export interface TokenProvisioningInformationDto {
+  /**
+   * Flag that indicates whether the user consented to the tokenization of their credentials.
+   * Required for card network tokenization in certain markets, such as India.
+   */
+  consumerConsentObtained?: boolean;
+
+  /**
+   * Flag that indicates whether AFA (Additional Factor of Authentication) for the PAN was completed.
+   * Required for card network tokenization in certain markets, such as India.
+   */
+  multiFactorAuthenticated?: boolean;
+}
+
+/**
+ * Card information for Instrument Identifiers
+ * The expirationMonth, expirationYear and securityCode is sent to the issuer as part of
+ * network token enrollment and is not stored under the Instrument Identifier.
+ */
+export interface InstrumentIdentifierCardDto {
+  /**
+   * The customer's payment card number, also known as the Primary Account Number (PAN).
+   * You can also use this field for encoded account numbers.
+   * @minLength 12
+   * @maxLength 19
+   */
+  number?: string;
+
+  /**
+   * Two-digit month in which the payment card expires.
+   * Format: MM
+   * Possible Values: 01 through 12
+   * @maxLength 2
+   */
+  expirationMonth?: string;
+
+  /**
+   * Four-digit year in which the credit card expires.
+   * Format: YYYY
+   * @maxLength 4
+   */
+  expirationYear?: string;
+
+  /**
+   * Card Verification Code.
+   * This value is sent to the issuer to support the approval of a network token provision.
+   * It is not persisted against the Instrument Identifier.
+   * @maxLength 4
+   */
+  securityCode?: string;
+}
+
+/**
+ * Bank account information for Instrument Identifiers
+ */
+export interface InstrumentIdentifierBankAccountDto {
+  /**
+   * Account number.
+   * When processing encoded account numbers, use this field for the encoded account number.
+   * @maxLength 17
+   */
+  number?: string;
+
+  /**
+   * Bank routing number. This is also called the transit number.
+   */
+  routingNumber?: string;
+}
+
+/**
+ * Tokenized card information with comprehensive network token details
+ */
+export interface InstrumentIdentifierTokenizedCardDto {
+  readonly _links?: {
+    readonly self?: {
+      readonly href?: string;
+    };
+  };
+  readonly id?: string;
+  readonly object?: "tokenizedCard";
+  accountReferenceId?: string;
+
+  /**
+   * Identifier of the consumer within the wallet. Maximum 24 characters for VTS.
+   * @maxLength 36
+   */
+  consumerId?: string;
+
+  /**
+   * Specifies whether the InstrumentId should be created (true) or not (false).
+   */
+  createInstrumentIdentifier?: boolean;
+
+  /**
+   * Source of the payment instrument.
+   */
+  source?: "ONFILE" | "TOKEN" | "ISSUER";
+
+  /**
+   * State of the network token or network token provision.
+   */
+  readonly state?: "ACTIVE" | "SUSPENDED" | "DELETED" | "UNPROVISIONED";
+
+  /**
+   * Issuers state for the network token
+   */
+  readonly reason?:
+    | "ACTIVE"
+    | "INVALID_REQUEST"
+    | "CARD_VERIFICATION_FAILED"
+    | "CARD_NOT_ELIGIBLE"
+    | "CARD_NOT_ALLOWED"
+    | "DECLINED"
+    | "SERVICE_UNAVAILABLE"
+    | "SYSTEM_ERROR";
+
+  /**
+   * The token requestor's network token for the provided PAN and consumer Id, if available.
+   */
+  readonly number?: string;
+
+  /**
+   * Two-digit month in which the network token expires.
+   */
+  readonly expirationMonth?: string;
+
+  /**
+   * Four-digit year in which the network token expires.
+   */
+  readonly expirationYear?: string;
+
+  /**
+   * The type of card (Card Network).
+   */
+  type?: "visa" | "mastercard" | "americanexpress";
+
+  /**
+   * Value generated by the card association to be used alongside the network token for processing a payment.
+   */
+  readonly cryptogram?: string;
+
+  /**
+   * 4-digit number generated by the card association to be used alongside the network token for processing a payment.
+   * Only supported for Amex and SCOF.
+   */
+  readonly securityCode?: string;
+
+  /**
+   * Raw Electronic Commerce Indicator provided by the card association with the result of the cardholder authentication.
+   */
+  readonly eci?: string;
+
+  /**
+   * 11-digit identifier that uniquely identifies the Token Requestor.
+   * @maxLength 11
+   */
+  readonly requestorId?: string;
+
+  /**
+   * Unique id to identify this PAN/enrollment.
+   */
+  readonly enrollmentId?: string;
+
+  /**
+   * Unique ID for network token.
+   */
+  readonly tokenReferenceId?: string;
+
+  /**
+   * Payment account reference.
+   */
+  readonly paymentAccountReference?: string;
+
+  /**
+   * Card object used to create a network token
+   */
+  card?: {
+    /**
+     * The customer's payment card number, also known as the Primary Account Number (PAN).
+     * @minLength 12
+     * @maxLength 19
+     */
+    number?: string;
+
+    /**
+     * Two-digit month in which the payment card expires.
+     * @maxLength 2
+     */
+    expirationMonth?: string;
+
+    /**
+     * Four-digit year in which the credit card expires.
+     * @maxLength 4
+     */
+    expirationYear?: string;
+
+    /**
+     * The type of card (Card Network).
+     */
+    type?: "001"; // visa
+
+    /**
+     * The customer's latest payment card number suffix.
+     */
+    readonly suffix?: string;
+  };
+
+  /**
+   * Passcode by issuer for ID&V.
+   */
+  passcode?: {
+    /**
+     * OTP generated at issuer.
+     */
+    value?: string;
+  };
+
+  /**
+   * Metadata associated with the tokenized card.
+   */
+  readonly metadata?: {
+    cardArt?: {
+      foregroundColor?: string;
+      combinedAsset?: {
+        id?: string;
+        _links?: {
+          self?: {
+            href?: string;
+          };
+        };
+      };
+      brandLogoAsset?: {
+        id?: string;
+        _links?: {
+          self?: {
+            href?: string;
+          };
+        };
+      };
+      issuerLogoAsset?: {
+        id?: string;
+        _links?: {
+          self?: {
+            href?: string;
+          };
+        };
+      };
+      iconAsset?: {
+        id?: string;
+        _links?: {
+          self?: {
+            href?: string;
+          };
+        };
+      };
+    };
+    issuer?: {
+      name?: string;
+      shortDescription?: string;
+      longDescription?: string;
+    };
+  };
+}
+
+/**
+ * Issuer information
+ */
+export interface InstrumentIdentifierIssuerDto {
+  /**
+   * This reference number serves as a link to the cardholder account and to all transactions for that account.
+   * @maxLength 32
+   */
+  readonly paymentAccountReference?: string;
+}
+
+/**
+ * Processing information for authorization options
+ */
+export interface InstrumentIdentifierProcessingInformationDto {
+  authorizationOptions?: {
+    initiator?: {
+      merchantInitiatedTransaction?: {
+        /**
+         * Network transaction identifier that was returned in the payment response field
+         * _processorInformation.transactionID_ in the reply message for either the original
+         * merchant-initiated payment in the series or the previous merchant-initiated payment in the series.
+         * @maxLength 15
+         */
+        previousTransactionId?: string;
+
+        /**
+         * Amount of the original authorization.
+         * @maxLength 15
+         */
+        originalAuthorizedAmount?: string;
+      };
+    };
+  };
+}
+
+/**
+ * Billing information for network token enrollment
+ * This information is sent to the issuer as part of network token enrollment
+ * and is not stored under the Instrument Identifier.
+ */
+export interface InstrumentIdentifierBillToDto {
+  /**
+   * Payment card billing street address as it appears on the credit card issuer's records.
+   * @maxLength 60
+   */
+  address1?: string;
+
+  /**
+   * Additional address information.
+   * @maxLength 60
+   */
+  address2?: string;
+
+  /**
+   * Payment card billing city.
+   * @maxLength 50
+   */
+  locality?: string;
+
+  /**
+   * State or province of the billing address.
+   * Use the State, Province, and Territory Codes for the United States and Canada.
+   * @maxLength 20
+   */
+  administrativeArea?: string;
+
+  /**
+   * Postal code for the billing address. The postal code must consist of 5 to 9 digits.
+   *
+   * When the billing country is the U.S., the 9-digit postal code must follow this format:
+   * [5 digits][dash][4 digits]
+   * Example: 12345-6789
+   *
+   * When the billing country is Canada, the 6-digit postal code must follow this format:
+   * [alpha][numeric][alpha][space][numeric][alpha][numeric]
+   * Example: A1B 2C3
+   * @maxLength 10
+   */
+  postalCode?: string;
+
+  /**
+   * Payment card billing country. Use the two-character ISO Standard Country Codes.
+   * @maxLength 2
+   */
+  country?: string;
+}
+
+/**
+ * BIN Lookup information for comprehensive card data
+ */
+export interface InstrumentIdentifierBinLookupDto {
+  readonly paymentAccountInformation?: {
+    card?: {
+      /**
+       * 3-digit numeric value that indicates the card type within Cybersource eco-system.
+       * @maxLength 3
+       */
+      type?: string;
+
+      /**
+       * Card brand name.
+       * @maxLength 20
+       */
+      brandName?: string;
+
+      /**
+       * 3-letter ISO Standard Currency Codes for the card currency.
+       * @maxLength 3
+       */
+      currency?: string;
+
+      /**
+       * Max length of the card.
+       * @maxLength 2
+       */
+      maxLength?: string;
+
+      /**
+       * Type of the payment credential.
+       * @maxLength 5
+       */
+      credentialType?: "PAN" | "TOKEN";
+
+      /**
+       * Array of brands
+       */
+      brands?: Array<{
+        /**
+         * 3-digit numeric value that indicates the card type within Cybersource eco-system.
+         * @maxLength 3
+         */
+        type?: string;
+
+        /**
+         * Card brand name.
+         * @maxLength 20
+         */
+        brandName?: string;
+      }>;
+
+      /**
+       * Card features and capabilities
+       */
+      features?: {
+        /**
+         * Account funding source.
+         * @maxLength 20
+         */
+        accountFundingSource?:
+          | "CREDIT"
+          | "DEBIT"
+          | "PREPAID"
+          | "DEFERRED DEBIT"
+          | "CHARGE";
+
+        /**
+         * Type of prepaid card.
+         * @maxLength 20
+         */
+        accountFundingSourceSubType?: "Reloadable" | "Non-reloadable";
+
+        /**
+         * Type of issuer product.
+         * @maxLength 50
+         */
+        cardProduct?: string;
+
+        /**
+         * Type of BIN based authentication.
+         * @maxLength 1
+         */
+        messageType?: "S" | "D"; // Single Message | Dual Message
+
+        /**
+         * Acceptance level of the PAN.
+         * @maxLength 2
+         */
+        acceptanceLevel?: "0" | "1" | "2" | "3" | "4" | "5"; // Normal | Monitor | Refuse | Not Allowed | Private | Test
+
+        /**
+         * Type of card platform.
+         * @maxLength 20
+         */
+        cardPlatform?:
+          | "BUSINESS"
+          | "CONSUMER"
+          | "CORPORATE"
+          | "COMMERCIAL"
+          | "GOVERNMENT";
+
+        /**
+         * Type of combo card.
+         * @maxLength 1
+         */
+        comboCard?: "0" | "1" | "2" | "3";
+
+        /**
+         * If the instrument can be used for corporate purchasing (American Express only).
+         */
+        corporatePurchase?: boolean;
+
+        /**
+         * If the BIN is for healthcare (HSA/FSA). Visa BINs only.
+         */
+        healthCard?: boolean;
+
+        /**
+         * If the BIN is shared by multiple issuers.
+         */
+        sharedBIN?: boolean;
+
+        /**
+         * If the BIN is valid only for POS domestic usage.
+         */
+        posDomesticOnly?: boolean;
+
+        /**
+         * If gambling transactions are allowed on the BIN.
+         */
+        gamblingAllowed?: boolean;
+
+        /**
+         * If a transaction qualifies for level 2 interchange rates.
+         */
+        commercialCardLevel2?: boolean;
+
+        /**
+         * If a transaction qualifies for level 3 interchange rates.
+         */
+        commercialCardLevel3?: boolean;
+
+        /**
+         * If a transaction qualifies for government exempt interchange fee.
+         */
+        exemptBIN?: boolean;
+
+        /**
+         * If the BIN participates in Account Level Management (ALM).
+         */
+        accountLevelManagement?: boolean;
+
+        /**
+         * If online gambling is blocked on the BIN.
+         */
+        onlineGamblingBlock?: boolean;
+
+        /**
+         * If auto-substantiation is enabled on the BIN.
+         */
+        autoSubstantiation?: boolean;
+
+        /**
+         * If the instrument is a flex credential.
+         */
+        flexCredential?: boolean;
+
+        /**
+         * Visa-assigned product identifier (Visa BINs only).
+         */
+        productId?: string;
+
+        /**
+         * Visa-assigned product subtype identifier (Visa BINs only).
+         */
+        productIdSubtype?: string;
+
+        /**
+         * If the payment instrument supports 3D Secure authentication.
+         */
+        threeDSSupport?: boolean;
+
+        /**
+         * If the payment instrument is eligible for Standing Instructions (recurring payments).
+         */
+        siEligible?: boolean;
+
+        /**
+         * If the card is eligible for Equated Monthly Installments (EMI).
+         */
+        emiEligible?: boolean;
+      };
+
+      /**
+       * Network information
+       */
+      network?: {
+        /**
+         * Code that identifies the network.
+         */
+        id?: string;
+      };
+    };
+  };
+
+  /**
+   * Issuer information
+   */
+  issuerInformation?: {
+    /**
+     * Issuer name.
+     * @maxLength 200
+     */
+    name?: string;
+
+    /**
+     * 2-character ISO Country Codes for the issuer.
+     * @maxLength 2
+     */
+    country?: string;
+
+    /**
+     * Length of the BIN.
+     * @maxLength 2
+     */
+    binLength?: string;
+
+    /**
+     * First 6 to 8 digits of a primary account number (PAN).
+     * @maxLength 8
+     */
+    accountPrefix?: string;
+
+    /**
+     * Customer service phone number for the issuer.
+     * @maxLength 50
+     */
+    phoneNumber?: string;
+  };
+}
+
+/**
+ * Embedded information in Instrument Identifier responses
+ */
+export interface InstrumentIdentifierEmbeddedDto {
+  /**
+   * BIN Information of the PAN provided by BinLookUp Service.
+   * This is only retrieved when retrieveBinDetails=true is passed as a query parameter.
+   */
+  readonly binLookup?: InstrumentIdentifierBinLookupDto;
+}
+
+/**
+ * Complete Instrument Identifier DTO with all possible fields
+ */
+export interface InstrumentIdentifierDto extends InstrumentIdentifierBaseDto {
+  tokenProvisioningInformation?: TokenProvisioningInformationDto;
+  card?: InstrumentIdentifierCardDto;
+  bankAccount?: InstrumentIdentifierBankAccountDto;
+  tokenizedCard?: InstrumentIdentifierTokenizedCardDto;
+  readonly issuer?: InstrumentIdentifierIssuerDto;
+  processingInformation?: InstrumentIdentifierProcessingInformationDto;
+  billTo?: InstrumentIdentifierBillToDto;
+  readonly _embedded?: InstrumentIdentifierEmbeddedDto;
+}
+
+/**
+ * Request DTO for creating an Instrument Identifier
+ */
+export interface InstrumentIdentifierCreateDto {
+  type?: "enrollable card" | "enrollable token";
+  tokenProvisioningInformation?: TokenProvisioningInformationDto;
+  card?: InstrumentIdentifierCardDto;
+  bankAccount?: InstrumentIdentifierBankAccountDto;
+  tokenizedCard?: InstrumentIdentifierTokenizedCardDto;
+  processingInformation?: InstrumentIdentifierProcessingInformationDto;
+  billTo?: InstrumentIdentifierBillToDto;
+}
+
+/**
+ * Request DTO for updating an Instrument Identifier
+ * Primarily used to update previousTransactionId and originalAuthorizedAmount values
+ */
+export interface InstrumentIdentifierUpdateDto {
+  processingInformation?: InstrumentIdentifierProcessingInformationDto;
+}
+
+/**
+ * Response DTO for Instrument Identifier operations
+ */
+export interface InstrumentIdentifierResponseDto
+  extends InstrumentIdentifierDto {}
+
+/**
+ * List response for Payment Instruments associated with an Instrument Identifier
+ */
+export interface InstrumentIdentifierPaymentInstrumentListDto {
+  readonly _links?: {
+    readonly self?: {
+      readonly href?: string;
+    };
+    readonly first?: {
+      readonly href?: string;
+    };
+    readonly prev?: {
+      readonly href?: string;
+    };
+    readonly next?: {
+      readonly href?: string;
+    };
+    readonly last?: {
+      readonly href?: string;
+    };
+  };
+  readonly offset?: number;
+  readonly limit?: number;
+  readonly count?: number;
+  readonly total?: number;
+  readonly _embedded?: {
+    readonly paymentInstruments?: Array<{
+      readonly _links?: {
+        readonly self?: {
+          readonly href?: string;
+        };
+        readonly customer?: {
+          readonly href?: string;
+        };
+      };
+      readonly id?: string;
+      readonly object?: "paymentInstrument";
+      default?: boolean;
+      readonly state?: "ACTIVE" | "CLOSED";
+      readonly type?: "cardHash";
+
+      /**
+       * Bank account information
+       */
+      bankAccount?: {
+        /**
+         * Account type.
+         * @maxLength 18
+         */
+        type?: "checking" | "general ledger" | "savings" | "corporate checking";
+      };
+
+      /**
+       * Card information
+       */
+      card?: {
+        /**
+         * Two-digit month in which the payment card expires.
+         * @maxLength 2
+         */
+        expirationMonth?: string;
+
+        /**
+         * Four-digit year in which the credit card expires.
+         * @maxLength 4
+         */
+        expirationYear?: string;
+
+        /**
+         * Card type indicator.
+         */
+        type?: string;
+
+        /**
+         * Issue number for Maestro (UK Domestic) cards.
+         * @maxLength 2
+         */
+        issueNumber?: string;
+
+        /**
+         * Start month for Maestro (UK Domestic) cards.
+         * @maxLength 2
+         */
+        startMonth?: string;
+
+        /**
+         * Start year for Maestro (UK Domestic) cards.
+         * @maxLength 4
+         */
+        startYear?: string;
+
+        /**
+         * Use as pinless debit indicator.
+         */
+        useAs?: string;
+
+        /**
+         * Hash value representing the card.
+         * @minLength 32
+         * @maxLength 34
+         */
+        readonly hash?: string;
+
+        /**
+         * Tokenized information
+         */
+        tokenizedInformation?: {
+          /**
+           * Token service provider identifier.
+           * @maxLength 11
+           */
+          requestorID?: string;
+
+          /**
+           * Type of transaction that provided the token data.
+           * @maxLength 1
+           */
+          transactionType?: string;
+        };
+      };
+
+      /**
+       * Buyer information
+       */
+      buyerInformation?: {
+        /**
+         * Company's tax identifier (eCheck only).
+         * @maxLength 9
+         */
+        companyTaxID?: string;
+
+        /**
+         * Currency used for the order.
+         * @maxLength 3
+         */
+        currency?: string;
+
+        /**
+         * Date of birth of the customer.
+         */
+        dateOfBirth?: string;
+
+        /**
+         * Personal identification information
+         */
+        personalIdentification?: Array<{
+          /**
+           * The value of the identification type.
+           * @maxLength 26
+           */
+          id?: string;
+
+          /**
+           * The type of identification.
+           */
+          type?: "driver license";
+
+          /**
+           * Issued by information
+           */
+          issuedBy?: {
+            /**
+             * State or province where the driver's license was issued.
+             * @maxLength 20
+             */
+            administrativeArea?: string;
+          };
+        }>;
+      };
+
+      /**
+       * Billing information
+       */
+      billTo?: {
+        /**
+         * Customer's first name.
+         * @maxLength 60
+         */
+        firstName?: string;
+
+        /**
+         * Customer's last name.
+         * @maxLength 60
+         */
+        lastName?: string;
+
+        /**
+         * Customer's company name.
+         * @maxLength 60
+         */
+        company?: string;
+
+        /**
+         * Billing street address.
+         * @maxLength 60
+         */
+        address1?: string;
+
+        /**
+         * Additional address information.
+         * @maxLength 60
+         */
+        address2?: string;
+
+        /**
+         * Billing city.
+         * @maxLength 50
+         */
+        locality?: string;
+
+        /**
+         * State or province.
+         * @maxLength 20
+         */
+        administrativeArea?: string;
+
+        /**
+         * Postal code.
+         * @maxLength 10
+         */
+        postalCode?: string;
+
+        /**
+         * Billing country.
+         * @maxLength 2
+         */
+        country?: string;
+
+        /**
+         * Customer's email address.
+         * @maxLength 255
+         */
+        email?: string;
+
+        /**
+         * Customer's phone number.
+         * @maxLength 15
+         */
+        phoneNumber?: string;
+      };
+
+      /**
+       * Processing information
+       */
+      processingInformation?: {
+        /**
+         * Bill payment program enabled flag.
+         */
+        billPaymentProgramEnabled?: boolean;
+
+        /**
+         * Bank transfer options
+         */
+        bankTransferOptions?: {
+          /**
+           * Authorization method for the transaction.
+           * @maxLength 3
+           */
+          SECCode?: "ARC" | "CCD" | "POP" | "PPD" | "TEL" | "WEB";
+        };
+      };
+
+      /**
+       * Merchant information
+       */
+      merchantInformation?: {
+        merchantDescriptor?: {
+          /**
+           * Alternate contact information.
+           * @maxLength 13
+           */
+          alternateName?: string;
+        };
+      };
+
+      /**
+       * Instrument identifier information
+       */
+      instrumentIdentifier?: {
+        /**
+         * The ID of the Instrument Identifier linked to the Payment Instrument.
+         * @minLength 12
+         * @maxLength 32
+         */
+        id?: string;
+      };
+
+      readonly metadata?: {
+        readonly creator?: string;
+      };
+
+      /**
+       * Embedded Instrument Identifier information
+       */
+      readonly _embedded?: {
+        readonly instrumentIdentifier?: InstrumentIdentifierDto;
+      };
+    }>;
+  };
+}
+
+/**
+ * Request DTO for enrolling an Instrument Identifier for Payment Network Token
+ */
+export interface InstrumentIdentifierEnrollmentDto {
+  type?: "enrollable card" | "enrollable token";
+  tokenProvisioningInformation?: TokenProvisioningInformationDto;
+  card?: InstrumentIdentifierCardDto;
+  billTo?: InstrumentIdentifierBillToDto;
+}
+
+/**
+ * Query parameters for retrieving Instrument Identifiers
+ */
+export interface InstrumentIdentifierQueryDto {
+  /**
+   * Retrieve the Bin Details of PAN or network token
+   */
+  retrieveBinDetails?: boolean;
+}
+
+/**
+ * Query parameters for listing Payment Instruments for an Instrument Identifier
+ */
+export interface InstrumentIdentifierListQueryDto
+  extends InstrumentIdentifierQueryDto {
+  /**
+   * Starting record in zero-based dataset. Default is 0.
+   */
+  offset?: number;
+
+  /**
+   * Maximum number of records to return. Default is 20, maximum is 100.
+   */
+  limit?: number;
+}
+
+/**
+ * Common error response structure for Instrument Identifier operations
+ */
+export interface InstrumentIdentifierErrorDto {
+  readonly errors?: Array<{
+    readonly type?:
+      | "invalidHeaders"
+      | "missingHeaders"
+      | "invalidFields"
+      | "missingFields"
+      | "unsupportedPaymentMethodModification"
+      | "invalidCombination"
+      | "forbidden"
+      | "notFound"
+      | "instrumentIdentifierDeletionError"
+      | "tokenIdConflict"
+      | "conflict"
+      | "notAvailable"
+      | "internalError";
+    readonly message?: string;
+    readonly details?: Array<{
+      readonly name?: string;
+      readonly location?: string;
+    }>;
+  }>;
+}

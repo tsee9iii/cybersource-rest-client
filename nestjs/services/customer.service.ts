@@ -5,6 +5,7 @@ import {
   CustomerCreateDto,
   CustomerUpdateDto,
   CustomerResponseDto,
+  CustomerPaginationOptionsDto,
 } from "../dto/customer.dto";
 import {
   ShippingAddressCreateDto,
@@ -13,6 +14,13 @@ import {
   ShippingAddressListResponseDto,
   ShippingAddressPaginationOptionsDto,
 } from "../dto/shipping-address.dto";
+import {
+  CustomerPaymentInstrumentCreateDto,
+  CustomerPaymentInstrumentUpdateDto,
+  CustomerPaymentInstrumentResponseDto,
+  CustomerPaymentInstrumentListResponseDto,
+  CustomerPaymentInstrumentPaginationOptionsDto,
+} from "../dto/customer-payment-instrument.dto";
 
 @Injectable()
 export class CustomerService extends BaseCyberSourceService {
@@ -194,6 +202,123 @@ export class CustomerService extends BaseCyberSourceService {
           shippingAddressId
         ),
       { customerId, shippingAddressId }
+    );
+  }
+
+  // Payment Instrument Management Methods
+
+  /**
+   * Create a payment instrument for a customer
+   * @param customerId Customer ID
+   * @param createPaymentInstrumentDto Payment instrument data
+   * @returns Promise<CustomerPaymentInstrumentResponseDto>
+   */
+  async createPaymentInstrument(
+    customerId: string,
+    createPaymentInstrumentDto: CustomerPaymentInstrumentCreateDto
+  ): Promise<CustomerPaymentInstrumentResponseDto> {
+    return this.executeApiCall(
+      "Creating payment instrument for customer",
+      () =>
+        this.cyberSourceService.tms.postCustomerPaymentInstrument(
+          customerId,
+          createPaymentInstrumentDto
+        ),
+      {
+        customerId,
+        ...this.sanitizeRequestForLogging({ createPaymentInstrumentDto }),
+      }
+    );
+  }
+
+  /**
+   * Get all payment instruments for a customer
+   * @param customerId Customer ID
+   * @param pagination Pagination options
+   * @returns Promise<CustomerPaymentInstrumentListResponseDto>
+   */
+  async getPaymentInstruments(
+    customerId: string,
+    pagination?: CustomerPaymentInstrumentPaginationOptionsDto
+  ): Promise<CustomerPaymentInstrumentListResponseDto> {
+    return this.executeApiCall(
+      "Retrieving payment instruments for customer",
+      () =>
+        this.cyberSourceService.tms.getCustomerPaymentInstrumentsList(
+          customerId,
+          pagination
+        ),
+      { customerId, pagination }
+    );
+  }
+
+  /**
+   * Get a specific payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentId Payment instrument ID
+   * @returns Promise<CustomerPaymentInstrumentResponseDto>
+   */
+  async getPaymentInstrument(
+    customerId: string,
+    paymentInstrumentId: string
+  ): Promise<CustomerPaymentInstrumentResponseDto> {
+    return this.executeApiCall(
+      "Retrieving payment instrument for customer",
+      () =>
+        this.cyberSourceService.tms.getCustomerPaymentInstrument(
+          customerId,
+          paymentInstrumentId
+        ),
+      { customerId, paymentInstrumentId }
+    );
+  }
+
+  /**
+   * Update a payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentId Payment instrument ID
+   * @param updatePaymentInstrumentDto Updated payment instrument data
+   * @returns Promise<CustomerPaymentInstrumentResponseDto>
+   */
+  async updatePaymentInstrument(
+    customerId: string,
+    paymentInstrumentId: string,
+    updatePaymentInstrumentDto: CustomerPaymentInstrumentUpdateDto
+  ): Promise<CustomerPaymentInstrumentResponseDto> {
+    return this.executeApiCall(
+      "Updating payment instrument for customer",
+      () =>
+        this.cyberSourceService.tms.patchCustomerPaymentInstrument(
+          customerId,
+          paymentInstrumentId,
+          updatePaymentInstrumentDto
+        ),
+      {
+        customerId,
+        paymentInstrumentId,
+        ...this.sanitizeRequestForLogging({ updatePaymentInstrumentDto }),
+      }
+    );
+  }
+
+  /**
+   * Delete a payment instrument for a customer
+   * @param customerId Customer ID
+   * @param paymentInstrumentId Payment instrument ID
+   * @returns Promise<void>
+   */
+  async deletePaymentInstrument(
+    customerId: string,
+    paymentInstrumentId: string
+  ): Promise<void> {
+    return this.executeVoidApiCall(
+      "Deleting payment instrument for customer",
+      () =>
+        this.cyberSourceService.tms.deleteCustomerPaymentInstrument(
+          customerId,
+          paymentInstrumentId
+        ),
+      { customerId, paymentInstrumentId }
     );
   }
 }

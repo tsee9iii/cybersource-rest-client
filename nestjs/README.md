@@ -595,6 +595,23 @@ export class AdvancedPaymentService {
 - `getShippingAddress(customerId, addressId)` - Get specific shipping address
 - `updateShippingAddress(customerId, addressId, request)` - Update shipping address
 - `deleteShippingAddress(customerId, addressId)` - Remove shipping address
+- `createPaymentInstrument(customerId, request)` - Add customer payment instruments
+- `getPaymentInstruments(customerId, pagination?)` - List customer payment instruments
+- `getPaymentInstrument(customerId, instrumentId)` - Get specific payment instrument
+- `updatePaymentInstrument(customerId, instrumentId, request)` - Update payment instrument
+- `deletePaymentInstrument(customerId, instrumentId)` - Remove payment instrument
+
+### PaymentInstrumentService (Standalone Payment Instruments)
+
+- `createPaymentInstrument(request)` - Create standalone payment instruments
+- `getPaymentInstrument(instrumentId, options?)` - Retrieve payment instrument details
+- `updatePaymentInstrument(instrumentId, request, options?)` - Update payment instrument
+- `deletePaymentInstrument(instrumentId)` - Remove payment instrument
+- `createCustomerPaymentInstrument(customerId, request)` - Create customer payment instrument
+- `listCustomerPaymentInstruments(customerId, options?)` - List customer payment instruments
+- `getCustomerPaymentInstrument(customerId, instrumentId)` - Get customer payment instrument
+- `updateCustomerPaymentInstrument(customerId, instrumentId, request)` - Update customer payment instrument
+- `deleteCustomerPaymentInstrument(customerId, instrumentId)` - Remove customer payment instrument
 
 ### TokenService (Token Management)
 

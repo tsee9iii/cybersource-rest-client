@@ -1,5 +1,6 @@
 /**
  * Data Transfer Objects for RBS (Recurring Billing Subscriptions) Plans
+ * Based on CyberSource API v1 specification
  */
 
 export interface PlanCreateDto {
@@ -8,7 +9,7 @@ export interface PlanCreateDto {
    */
   clientReferenceInformation?: {
     /**
-     * Brief description of the plan or any comment you wish to add to the plan.
+     * Brief description of the order or any comment you wish to add to the order.
      */
     comments?: string;
     partner?: {
@@ -36,7 +37,82 @@ export interface PlanCreateDto {
   };
 
   /**
-   * Plan information
+   * Plan information (REQUIRED)
+   */
+  planInformation: {
+    /**
+     * Plan code is an optional field, If not provided system generates and assign one
+     */
+    code?: string;
+    /**
+     * Plan name (REQUIRED)
+     */
+    name: string;
+    /**
+     * Plan description
+     */
+    description?: string;
+    /**
+     * Plan status. Valid values: DRAFT, ACTIVE (default)
+     */
+    status?: "DRAFT" | "ACTIVE";
+    /**
+     * Billing Frequency (REQUIRED)
+     */
+    billingPeriod: {
+      /**
+       * Example:
+       * - If length=1 & unit=month then charge every month
+       * - If length=7 & unit=day then charge every 7th day
+       */
+      length: string;
+      /**
+       * Calendar unit values.
+       * - D - day
+       * - M - month
+       * - W - week
+       * - Y - year
+       */
+      unit: "D" | "M" | "W" | "Y";
+    };
+    /**
+     * Number of times customer is going to be billed
+     */
+    billingCycles?: {
+      /**
+       * Describe total number of billing cycles
+       */
+      total?: string;
+    };
+  };
+
+  /**
+   * Order information (REQUIRED)
+   */
+  orderInformation: {
+    /**
+     * Amount details (REQUIRED)
+     */
+    amountDetails: {
+      /**
+       * Currency used for the order. Use the three-character ISO Standard Currency Codes (REQUIRED)
+       */
+      currency: string;
+      /**
+       * Billing amount for the billing period (REQUIRED)
+       */
+      billingAmount: string;
+      /**
+       * Subscription setup fee
+       */
+      setupFee?: string;
+    };
+  };
+}
+
+export interface PlanUpdateDto {
+  /**
+   * Plan information for updates
    */
   planInformation?: {
     /**
@@ -53,106 +129,74 @@ export interface PlanCreateDto {
     description?: string;
     /**
      * Plan status. Valid values: DRAFT, ACTIVE, INACTIVE
+     * Note: Updating to DRAFT is not allowed from ACTIVE and INACTIVE status
      */
     status?: "DRAFT" | "ACTIVE" | "INACTIVE";
     /**
-     * Billing cycle information
+     * Billing Frequency
+     */
+    billingPeriod?: {
+      /**
+       * Example:
+       * - If length=1 & unit=month then charge every month
+       * - If length=7 & unit=day then charge every 7th day
+       */
+      length?: string;
+      /**
+       * Calendar unit values.
+       * - D - day
+       * - M - month
+       * - W - week
+       * - Y - year
+       */
+      unit?: "D" | "M" | "W" | "Y";
+    };
+    /**
+     * Number of times customer is going to be billed
      */
     billingCycles?: {
       /**
-       * Billing cycle type. Valid values: WEEKLY, MONTHLY, QUARTERLY, SEMI_ANNUALLY, ANNUALLY
+       * Describe total number of billing cycles
        */
-      frequency?:
-        | "WEEKLY"
-        | "MONTHLY"
-        | "QUARTERLY"
-        | "SEMI_ANNUALLY"
-        | "ANNUALLY";
-      /**
-       * Number of cycles
-       */
-      totalCycles?: number;
+      total?: string;
     };
-  };
-
-  /**
-   * Billing information
-   */
-  billingInformation?: {
-    /**
-     * Amount to be charged
-     */
-    amount?: string;
-    /**
-     * Currency code
-     */
-    currency?: string;
   };
 
   /**
    * Processing information
    */
   processingInformation?: {
-    /**
-     * Business application
-     */
-    businessApplication?: string;
-    /**
-     * Commerce indicator
-     */
-    commerceIndicator?: string;
-  };
-}
-
-export interface PlanUpdateDto {
-  /**
-   * Plan information for updates
-   */
-  planInformation?: {
-    /**
-     * Plan name
-     */
-    name?: string;
-    /**
-     * Plan description
-     */
-    description?: string;
-    /**
-     * Plan status. Valid values: DRAFT, ACTIVE, INACTIVE
-     */
-    status?: "DRAFT" | "ACTIVE" | "INACTIVE";
-    /**
-     * Billing cycle information
-     */
-    billingCycles?: {
+    subscriptionBillingOptions?: {
       /**
-       * Billing cycle type
+       * Valid Values:
+       * - ALL - Change applied to all Subscriptions (Existing + New)
+       * - NEW - Change applied to New Subscriptions only
        */
-      frequency?:
-        | "WEEKLY"
-        | "MONTHLY"
-        | "QUARTERLY"
-        | "SEMI_ANNUALLY"
-        | "ANNUALLY";
-      /**
-       * Number of cycles
-       */
-      totalCycles?: number;
+      applyTo?: "ALL" | "NEW";
     };
   };
 
   /**
-   * Billing information
+   * Order information
    */
-  billingInformation?: {
+  orderInformation?: {
     /**
-     * Amount to be charged
+     * Amount details
      */
-    amount?: string;
-    /**
-     * Currency code
-     */
-    currency?: string;
+    amountDetails?: {
+      /**
+       * Currency used for the order. Use the three-character ISO Standard Currency Codes
+       */
+      currency?: string;
+      /**
+       * Billing amount for the billing period
+       */
+      billingAmount?: string;
+      /**
+       * Subscription setup fee
+       */
+      setupFee?: string;
+    };
   };
 }
 
@@ -163,6 +207,7 @@ export interface PlanResponseDto {
   _links?: {
     self?: {
       href?: string;
+      method?: string;
     };
   };
 
@@ -170,6 +215,16 @@ export interface PlanResponseDto {
    * Plan ID
    */
   id?: string;
+
+  /**
+   * Submission time in UTC
+   */
+  submitTimeUtc?: string;
+
+  /**
+   * Transaction status
+   */
+  status?: string;
 
   /**
    * Plan information
@@ -180,6 +235,10 @@ export interface PlanResponseDto {
      */
     code?: string;
     /**
+     * Plan status
+     */
+    status?: string;
+    /**
      * Plan name
      */
     name?: string;
@@ -188,43 +247,51 @@ export interface PlanResponseDto {
      */
     description?: string;
     /**
-     * Plan status
+     * Billing Frequency
      */
-    status?: string;
+    billingPeriod?: {
+      /**
+       * Length of billing period
+       */
+      length?: string;
+      /**
+       * Calendar unit values (D, M, W, Y)
+       */
+      unit?: string;
+    };
     /**
-     * Billing cycle information
+     * Number of billing cycles
      */
     billingCycles?: {
-      frequency?: string;
-      totalCycles?: number;
+      /**
+       * Total number of billing cycles
+       */
+      total?: string;
     };
   };
 
   /**
-   * Billing information
+   * Order information
    */
-  billingInformation?: {
-    amount?: string;
-    currency?: string;
+  orderInformation?: {
+    /**
+     * Amount details
+     */
+    amountDetails?: {
+      /**
+       * Currency code
+       */
+      currency?: string;
+      /**
+       * Billing amount for the billing period
+       */
+      billingAmount?: string;
+      /**
+       * Subscription setup fee
+       */
+      setupFee?: string;
+    };
   };
-
-  /**
-   * Processing information
-   */
-  processingInformation?: {
-    businessApplication?: string;
-    commerceIndicator?: string;
-  };
-
-  /**
-   * Submission time
-   */
-  submitTimeUtc?: string;
-
-  /**
-   * Plan status
-   */
-  status?: string;
 }
 
 export interface PlanListResponseDto {
@@ -232,51 +299,132 @@ export interface PlanListResponseDto {
    * Links for pagination
    */
   _links?: {
-    self?: { href?: string };
-    first?: { href?: string };
-    prev?: { href?: string };
-    next?: { href?: string };
-    last?: { href?: string };
+    self?: { href?: string; method?: string };
+    next?: { href?: string; method?: string };
+    previous?: { href?: string; method?: string };
   };
 
   /**
-   * The offset parameter supplied in the request
+   * Submission time in UTC
    */
-  offset?: number;
+  submitTimeUtc?: string;
 
   /**
-   * The limit parameter supplied in the request
+   * Total number of plans created
    */
-  limit?: number;
+  totalCount?: number;
 
   /**
-   * The number of plans returned in the array
+   * Array of plans
    */
-  count?: number;
+  plans?: Array<{
+    /**
+     * Resource links
+     */
+    _links?: {
+      self?: {
+        href?: string;
+        method?: string;
+      };
+    };
 
-  /**
-   * The total number of plans
-   */
-  total?: number;
+    /**
+     * Plan ID
+     */
+    id?: string;
 
-  /**
-   * Embedded plan resources
-   */
-  _embedded?: {
-    plans?: PlanResponseDto[];
-  };
+    /**
+     * Plan information
+     */
+    planInformation?: {
+      /**
+       * Plan code
+       */
+      code?: string;
+      /**
+       * Plan status
+       */
+      status?: string;
+      /**
+       * Plan name
+       */
+      name?: string;
+      /**
+       * Plan description
+       */
+      description?: string;
+      /**
+       * Billing Frequency
+       */
+      billingPeriod?: {
+        /**
+         * Length of billing period
+         */
+        length?: string;
+        /**
+         * Calendar unit values (D, M, W, Y)
+         */
+        unit?: string;
+      };
+      /**
+       * Number of billing cycles
+       */
+      billingCycles?: {
+        /**
+         * Total number of billing cycles
+         */
+        total?: string;
+      };
+    };
+
+    /**
+     * Order information
+     */
+    orderInformation?: {
+      /**
+       * Amount details
+       */
+      amountDetails?: {
+        /**
+         * Currency code
+         */
+        currency?: string;
+        /**
+         * Billing amount for the billing period
+         */
+        billingAmount?: string;
+        /**
+         * Subscription setup fee
+         */
+        setupFee?: string;
+      };
+    };
+  }>;
 }
 
 export interface PlanPaginationOptionsDto {
   /**
-   * Starting record in zero-based dataset that should be returned as the first object in the array.
-   * Default is 0.
+   * Page offset number
    */
   offset?: number;
 
   /**
-   * The maximum number that can be returned in the array starting from the offset record in zero-based dataset.
-   * Default is 20, maximum is 100.
+   * Number of items to be returned. Default - 20, Max - 100
    */
   limit?: number;
+
+  /**
+   * Filter by Plan Code
+   */
+  code?: string;
+
+  /**
+   * Filter by Plan Status
+   */
+  status?: string;
+
+  /**
+   * Filter by Plan Name. (First sub string or full string) **[Not Recommended]**
+   */
+  name?: string;
 }

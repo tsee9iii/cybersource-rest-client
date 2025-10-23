@@ -7,6 +7,7 @@ import {
   SubscriptionResponseDto,
   SubscriptionListResponseDto,
   SubscriptionPaginationOptionsDto,
+  SubscriptionActivateDto,
   FollowOnSubscriptionDto,
 } from "../dto/subscription.dto";
 
@@ -119,15 +120,21 @@ export class SubscriptionService extends BaseCyberSourceService {
   /**
    * Activate a subscription
    * @param subscriptionId Subscription ID
+   * @param processSkippedPayments Indicates if skipped payments should be processed from the period when the subscription was suspended. Default: true
    * @returns Promise<SubscriptionResponseDto>
    */
   async activateSubscription(
-    subscriptionId: string
+    subscriptionId: string,
+    processSkippedPayments: boolean = true
   ): Promise<SubscriptionResponseDto> {
     return this.executeApiCall(
       "Activating subscription",
-      () => this.cyberSourceService.rbs.activateSubscription(subscriptionId),
-      { subscriptionId }
+      () =>
+        this.cyberSourceService.rbs.activateSubscription(
+          subscriptionId,
+          processSkippedPayments
+        ),
+      { subscriptionId, processSkippedPayments }
     );
   }
 

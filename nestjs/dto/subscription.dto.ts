@@ -1,5 +1,6 @@
 /**
  * Data Transfer Objects for RBS (Recurring Billing Subscriptions) Subscriptions
+ * Based on CyberSource API v1 specification
  */
 
 export interface SubscriptionCreateDto {
@@ -8,7 +9,11 @@ export interface SubscriptionCreateDto {
    */
   clientReferenceInformation?: {
     /**
-     * Brief description of the subscription or any comment you wish to add to the subscription.
+     * Merchant-generated order reference or tracking number (Deprecated: This field is ignored)
+     */
+    code?: string;
+    /**
+     * Brief description of the order or any comment you wish to add to the order (Deprecated: This field is ignored)
      */
     comments?: string;
     partner?: {
@@ -22,17 +27,217 @@ export interface SubscriptionCreateDto {
       solutionId?: string;
     };
     /**
-     * The name of the Connection Method client
+     * The name of the Connection Method client (Deprecated: This field is ignored)
      */
     applicationName?: string;
     /**
-     * Version of the CyberSource application or integration used
+     * Version of the CyberSource application or integration used (Deprecated: This field is ignored)
      */
     applicationVersion?: string;
     /**
-     * The entity that is responsible for running the transaction
+     * The entity that is responsible for running the transaction (Deprecated: This field is ignored)
      */
     applicationUser?: string;
+  };
+
+  /**
+   * Processing information
+   */
+  processingInformation?: {
+    /**
+     * Commerce Indicator is a way to identify the type of transaction.
+     * Valid values: MOTO, RECURRING, INTERNET
+     */
+    commerceIndicator?: "MOTO" | "RECURRING" | "INTERNET";
+    authorizationOptions?: {
+      initiator?: {
+        /**
+         * This field indicates whether the transaction is a merchant-initiated transaction or customer-initiated transaction.
+         * Valid values: customer, merchant
+         */
+        type?: "customer" | "merchant";
+      };
+    };
+  };
+
+  /**
+   * Plan information (for independent subscriptions without linking to a plan)
+   */
+  planInformation?: {
+    /**
+     * Billing Frequency
+     */
+    billingPeriod?: {
+      /**
+       * Example:
+       * - If length=1 & unit=month then charge every month
+       * - If length=7 & unit=day then charge every 7th day
+       */
+      length?: string;
+      /**
+       * Calendar unit values.
+       * - D - day
+       * - M - month
+       * - W - week
+       * - Y - year
+       */
+      unit?: "D" | "M" | "W" | "Y";
+    };
+    /**
+     * Number of times customer is going to be billed
+     */
+    billingCycles?: {
+      /**
+       * Describe total number of billing cycles
+       */
+      total?: string;
+    };
+  };
+
+  /**
+   * Subscription information (REQUIRED)
+   */
+  subscriptionInformation: {
+    /**
+     * Subscription code is an optional field, If not provided system generates and assign one
+     */
+    code?: string;
+    /**
+     * Plan Id. Use Plan Id from Create Plan Service.
+     */
+    planId?: string;
+    /**
+     * Subscription Name (REQUIRED)
+     */
+    name: string;
+    /**
+     * Start date of the Subscription (REQUIRED)
+     * Start date must be in UTC. Format: YYYY-MM-DDThh:mm:ssZ
+     * The T separates the date and the time. The Z indicates UTC.
+     * Example: 2022-08-11T22:47:57Z equals August 11, 2022, at 22:47:57 (10:47:57 p.m.)
+     */
+    startDate: string;
+    /**
+     * Network transaction identifier that was returned in the payment response field
+     * _processorInformation.transactionId_ in the reply message for the original subscription-initializing payment.
+     */
+    originalTransactionId?: string;
+    /**
+     * Amount of the original subscription-initializing payment.
+     * Required when using a Diners or Discover card.
+     */
+    originalTransactionAuthorizedAmount?: string;
+  };
+
+  /**
+   * Payment information (REQUIRED)
+   */
+  paymentInformation: {
+    /**
+     * Customer payment information (REQUIRED)
+     */
+    customer: {
+      /**
+       * Unique identifier for the Customer token used in the transaction (REQUIRED)
+       */
+      id: string;
+    };
+  };
+
+  /**
+   * Order information
+   */
+  orderInformation?: {
+    /**
+     * Amount details
+     */
+    amountDetails?: {
+      /**
+       * Currency used for the order. Use the three-character ISO Standard Currency Codes
+       */
+      currency?: string;
+      /**
+       * Billing amount for the billing period
+       */
+      billingAmount?: string;
+      /**
+       * Subscription setup fee
+       */
+      setupFee?: string;
+    };
+  };
+}
+
+export interface SubscriptionUpdateDto {
+  /**
+   * Client reference information
+   */
+  clientReferenceInformation?: {
+    /**
+     * Merchant-generated order reference or tracking number (Deprecated: This field is ignored)
+     */
+    code?: string;
+    /**
+     * Brief description of the order or any comment you wish to add to the order (Deprecated: This field is ignored)
+     */
+    comments?: string;
+    partner?: {
+      /**
+       * Identifier for the developer that helped integrate a partner solution to CyberSource.
+       */
+      developerId?: string;
+      /**
+       * Identifier for the partner that is integrated to CyberSource.
+       */
+      solutionId?: string;
+    };
+    /**
+     * The name of the Connection Method client (Deprecated: This field is ignored)
+     */
+    applicationName?: string;
+    /**
+     * Version of the CyberSource application or integration used (Deprecated: This field is ignored)
+     */
+    applicationVersion?: string;
+    /**
+     * The entity that is responsible for running the transaction (Deprecated: This field is ignored)
+     */
+    applicationUser?: string;
+  };
+
+  /**
+   * Processing information
+   */
+  processingInformation?: {
+    /**
+     * Commerce Indicator is a way to identify the type of transaction.
+     * Valid values: MOTO, RECURRING, INTERNET
+     */
+    commerceIndicator?: "MOTO" | "RECURRING" | "INTERNET";
+    authorizationOptions?: {
+      initiator?: {
+        /**
+         * This field indicates whether the transaction is a merchant-initiated transaction or customer-initiated transaction.
+         * Valid values: customer, merchant
+         */
+        type?: "customer" | "merchant";
+      };
+    };
+  };
+
+  /**
+   * Plan information
+   */
+  planInformation?: {
+    /**
+     * Number of times customer is going to be billed
+     */
+    billingCycles?: {
+      /**
+       * Describe total number of billing cycles
+       */
+      total?: string;
+    };
   };
 
   /**
@@ -44,114 +249,36 @@ export interface SubscriptionCreateDto {
      */
     code?: string;
     /**
-     * Subscription name
+     * Plan Id. Use Plan Id from Create Plan Service.
+     */
+    planId?: string;
+    /**
+     * Subscription Name
      */
     name?: string;
     /**
-     * Subscription description
-     */
-    description?: string;
-    /**
-     * Start date for the subscription in ISO 8601 format
+     * Start date of the Subscription
+     * Start date must be in UTC. Format: YYYY-MM-DDThh:mm:ssZ
      */
     startDate?: string;
-    /**
-     * End date for the subscription in ISO 8601 format
-     */
-    endDate?: string;
-    /**
-     * Plan ID to associate with this subscription
-     */
-    planId?: string;
   };
 
   /**
-   * Payment information
+   * Order information
    */
-  paymentInformation?: {
+  orderInformation?: {
     /**
-     * Customer payment instrument token
+     * Amount details
      */
-    customer?: {
+    amountDetails?: {
       /**
-       * Customer ID
+       * Billing amount for the billing period
        */
-      id?: string;
-    };
-    /**
-     * Payment instrument token
-     */
-    paymentInstrument?: {
+      billingAmount?: string;
       /**
-       * Payment instrument ID
+       * Subscription setup fee
        */
-      id?: string;
-    };
-  };
-
-  /**
-   * Processing information
-   */
-  processingInformation?: {
-    /**
-     * Business application
-     */
-    businessApplication?: string;
-    /**
-     * Commerce indicator
-     */
-    commerceIndicator?: string;
-  };
-}
-
-export interface SubscriptionUpdateDto {
-  /**
-   * Subscription information for updates
-   */
-  subscriptionInformation?: {
-    /**
-     * Subscription name
-     */
-    name?: string;
-    /**
-     * Subscription description
-     */
-    description?: string;
-    /**
-     * Start date for the subscription in ISO 8601 format
-     */
-    startDate?: string;
-    /**
-     * End date for the subscription in ISO 8601 format
-     */
-    endDate?: string;
-    /**
-     * Plan ID to associate with this subscription
-     */
-    planId?: string;
-  };
-
-  /**
-   * Payment information
-   */
-  paymentInformation?: {
-    /**
-     * Customer payment instrument token
-     */
-    customer?: {
-      /**
-       * Customer ID
-       */
-      id?: string;
-    };
-    /**
-     * Payment instrument token
-     */
-    paymentInstrument?: {
-      /**
-       * Payment instrument ID
-       */
-      id?: string;
+      setupFee?: string;
     };
   };
 }
@@ -163,12 +290,23 @@ export interface SubscriptionResponseDto {
   _links?: {
     self?: {
       href?: string;
+      method?: string;
     };
-    plan?: {
+    update?: {
       href?: string;
+      method?: string;
     };
-    customer?: {
+    cancel?: {
       href?: string;
+      method?: string;
+    };
+    suspend?: {
+      href?: string;
+      method?: string;
+    };
+    activate?: {
+      href?: string;
+      method?: string;
     };
   };
 
@@ -176,6 +314,57 @@ export interface SubscriptionResponseDto {
    * Subscription ID
    */
   id?: string;
+
+  /**
+   * Submission time in UTC
+   */
+  submitTimeUtc?: string;
+
+  /**
+   * Transaction status
+   * Possible values: COMPLETED, PENDING_REVIEW, DECLINED, INVALID_REQUEST
+   */
+  status?: string;
+
+  /**
+   * Plan information
+   */
+  planInformation?: {
+    /**
+     * Plan code
+     */
+    code?: string;
+    /**
+     * Plan name
+     */
+    name?: string;
+    /**
+     * Billing Frequency
+     */
+    billingPeriod?: {
+      /**
+       * Length of billing period
+       */
+      length?: string;
+      /**
+       * Calendar unit values (D, M, W, Y)
+       */
+      unit?: string;
+    };
+    /**
+     * Number of billing cycles
+     */
+    billingCycles?: {
+      /**
+       * Total number of billing cycles
+       */
+      total?: string;
+      /**
+       * Current billing cycle
+       */
+      current?: string;
+    };
+  };
 
   /**
    * Subscription information
@@ -186,25 +375,29 @@ export interface SubscriptionResponseDto {
      */
     code?: string;
     /**
-     * Subscription name
+     * Plan Id
+     */
+    planId?: string;
+    /**
+     * Subscription Name
      */
     name?: string;
     /**
-     * Subscription description
-     */
-    description?: string;
-    /**
-     * Start date for the subscription
+     * Start date of the Subscription
      */
     startDate?: string;
     /**
-     * End date for the subscription
+     * Subscription Status
+     * Possible values: PENDING, ACTIVE, FAILED, COMPLETED, DELINQUENT, SUSPENDED, CANCELLED
      */
-    endDate?: string;
-    /**
-     * Plan ID associated with this subscription
-     */
-    planId?: string;
+    status?:
+      | "PENDING"
+      | "ACTIVE"
+      | "FAILED"
+      | "COMPLETED"
+      | "DELINQUENT"
+      | "SUSPENDED"
+      | "CANCELLED";
   };
 
   /**
@@ -212,43 +405,61 @@ export interface SubscriptionResponseDto {
    */
   paymentInformation?: {
     customer?: {
-      id?: string;
-    };
-    paymentInstrument?: {
+      /**
+       * Unique identifier for the Customer token
+       */
       id?: string;
     };
   };
 
   /**
-   * Processing information
+   * Order information
    */
-  processingInformation?: {
-    businessApplication?: string;
-    commerceIndicator?: string;
+  orderInformation?: {
+    /**
+     * Amount details
+     */
+    amountDetails?: {
+      /**
+       * Currency code
+       */
+      currency?: string;
+      /**
+       * Billing amount for the billing period
+       */
+      billingAmount?: string;
+      /**
+       * Subscription setup fee
+       */
+      setupFee?: string;
+    };
+    /**
+     * Bill to information
+     */
+    billTo?: {
+      /**
+       * Customer's first name
+       */
+      firstName?: string;
+      /**
+       * Customer's last name
+       */
+      lastName?: string;
+    };
   };
 
   /**
-   * Submission time
+   * Reactivation information (present for suspended subscriptions)
    */
-  submitTimeUtc?: string;
-
-  /**
-   * Subscription status
-   */
-  status?: string;
-
-  /**
-   * Plan information
-   */
-  planInformation?: {
-    code?: string;
-    name?: string;
-    description?: string;
-    status?: string;
-    billingCycles?: {
-      frequency?: string;
-      totalCycles?: number;
-    };
+  reactivationInformation?: {
+    /**
+     * Number of payments that should have occurred while the subscription was in a suspended status
+     */
+    skippedPaymentsCount?: string;
+    /**
+     * Total amount that will be charged upon reactivation if processSkippedPayments is set to true
+     */
+    skippedPaymentsTotalAmount?: string;
   };
 }
 
@@ -257,53 +468,203 @@ export interface SubscriptionListResponseDto {
    * Links for pagination
    */
   _links?: {
-    self?: { href?: string };
-    first?: { href?: string };
-    prev?: { href?: string };
-    next?: { href?: string };
-    last?: { href?: string };
+    self?: { href?: string; method?: string };
+    next?: { href?: string; method?: string };
+    previous?: { href?: string; method?: string };
   };
 
   /**
-   * The offset parameter supplied in the request
+   * Submission time in UTC
    */
-  offset?: number;
+  submitTimeUtc?: string;
 
   /**
-   * The limit parameter supplied in the request
+   * Total number of subscriptions created
    */
-  limit?: number;
+  totalCount?: number;
 
   /**
-   * The number of subscriptions returned in the array
+   * Array of subscriptions
    */
-  count?: number;
+  subscriptions?: Array<{
+    /**
+     * Resource links
+     */
+    _links?: {
+      self?: {
+        href?: string;
+        method?: string;
+      };
+      cancel?: {
+        href?: string;
+        method?: string;
+      };
+      suspend?: {
+        href?: string;
+        method?: string;
+      };
+      activate?: {
+        href?: string;
+        method?: string;
+      };
+    };
 
-  /**
-   * The total number of subscriptions
-   */
-  total?: number;
+    /**
+     * Subscription ID
+     */
+    id?: string;
 
-  /**
-   * Embedded subscription resources
-   */
-  _embedded?: {
-    subscriptions?: SubscriptionResponseDto[];
-  };
+    /**
+     * Plan information
+     */
+    planInformation?: {
+      /**
+       * Plan code
+       */
+      code?: string;
+      /**
+       * Plan name
+       */
+      name?: string;
+      /**
+       * Billing Frequency
+       */
+      billingPeriod?: {
+        /**
+         * Length of billing period
+         */
+        length?: string;
+        /**
+         * Calendar unit values (D, M, W, Y)
+         */
+        unit?: string;
+      };
+      /**
+       * Number of billing cycles
+       */
+      billingCycles?: {
+        /**
+         * Total number of billing cycles
+         */
+        total?: string;
+        /**
+         * Current billing cycle
+         */
+        current?: string;
+      };
+    };
+
+    /**
+     * Subscription information
+     */
+    subscriptionInformation?: {
+      /**
+       * Subscription code
+       */
+      code?: string;
+      /**
+       * Plan Id
+       */
+      planId?: string;
+      /**
+       * Subscription Name
+       */
+      name?: string;
+      /**
+       * Start date of the Subscription
+       */
+      startDate?: string;
+      /**
+       * Subscription Status
+       */
+      status?:
+        | "PENDING"
+        | "ACTIVE"
+        | "FAILED"
+        | "COMPLETED"
+        | "DELINQUENT"
+        | "SUSPENDED"
+        | "CANCELLED";
+    };
+
+    /**
+     * Payment information
+     */
+    paymentInformation?: {
+      customer?: {
+        /**
+         * Unique identifier for the Customer token
+         */
+        id?: string;
+      };
+    };
+
+    /**
+     * Order information
+     */
+    orderInformation?: {
+      /**
+       * Amount details
+       */
+      amountDetails?: {
+        /**
+         * Currency code
+         */
+        currency?: string;
+        /**
+         * Billing amount for the billing period
+         */
+        billingAmount?: string;
+        /**
+         * Subscription setup fee
+         */
+        setupFee?: string;
+      };
+      /**
+       * Bill to information
+       */
+      billTo?: {
+        /**
+         * Customer's first name
+         */
+        firstName?: string;
+        /**
+         * Customer's last name
+         */
+        lastName?: string;
+      };
+    };
+  }>;
 }
 
 export interface SubscriptionPaginationOptionsDto {
   /**
-   * Starting record in zero-based dataset that should be returned as the first object in the array.
-   * Default is 0.
+   * Page offset number
    */
   offset?: number;
 
   /**
-   * The maximum number that can be returned in the array starting from the offset record in zero-based dataset.
-   * Default is 20, maximum is 100.
+   * Number of items to be returned. Default - 20, Max - 100
    */
   limit?: number;
+
+  /**
+   * Filter by Subscription Code
+   */
+  code?: string;
+
+  /**
+   * Filter by Subscription Status
+   */
+  status?: string;
+}
+
+export interface SubscriptionActivateDto {
+  /**
+   * Indicates if skipped payments should be processed from the period when the subscription was suspended.
+   * By default, this is set to true.
+   */
+  processSkippedPayments?: boolean;
 }
 
 export interface FollowOnSubscriptionDto {

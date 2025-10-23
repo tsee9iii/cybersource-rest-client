@@ -184,6 +184,7 @@ export class TokenService extends BaseCyberSourceService {
 
   /**
    * Get payment instrument (token) details
+   * @deprecated Use PaymentInstrumentService.getPaymentInstrument instead for standalone payment instruments or CustomerService.getPaymentInstrument for customer-specific payment instruments
    */
   async getPaymentInstrument(
     customerId: string,
@@ -224,6 +225,7 @@ export class TokenService extends BaseCyberSourceService {
 
   /**
    * Create payment instrument for existing customer
+   * @deprecated Use PaymentInstrumentService.createPaymentInstrument for standalone payment instruments or CustomerService.createPaymentInstrument for customer-specific payment instruments
    */
   async createPaymentInstrument(
     customerId: string,
@@ -262,6 +264,7 @@ export class TokenService extends BaseCyberSourceService {
 
   /**
    * Delete payment instrument
+   * @deprecated Use PaymentInstrumentService.deletePaymentInstrument for standalone payment instruments or CustomerService.deletePaymentInstrument for customer-specific payment instruments
    */
   async deletePaymentInstrument(
     customerId: string,

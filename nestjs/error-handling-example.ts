@@ -58,9 +58,19 @@ async function exampleUsage() {
       planInformation: {
         name: "Test Plan",
         description: "A test subscription plan",
+        billingPeriod: {
+          length: "1",
+          unit: "M",
+        },
         billingCycles: {
-          frequency: "MONTHLY",
-          totalCycles: 12,
+          total: "12",
+        },
+      },
+      orderInformation: {
+        amountDetails: {
+          currency: "USD",
+          billingAmount: "10.00",
+          setupFee: "2.00",
         },
       },
     });
