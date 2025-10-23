@@ -61,11 +61,12 @@ jobs:
           npm version ${{ github.event.inputs.version-type }} -m "chore: bump nestjs package to %s"
           echo "NESTJS_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: Update Root Dependency
+      - name: Update Root Dependency in NestJS Package
         if: github.event.inputs.package == 'both'
         run: |
           cd nestjs
-          npm install @infinitesolutions/cybersource-rest-client@^${{ env.ROOT_VERSION }} --save
+          # Update the dependency version in package.json without installing from NPM
+          npm pkg set dependencies.@infinitesolutions/cybersource-rest-client="^${{ env.ROOT_VERSION }}"
 
       - name: Commit and Push Changes
         run: |
