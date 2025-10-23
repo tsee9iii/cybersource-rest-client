@@ -1,6 +1,6 @@
 {
   "name": "@infinitesolutions/cybersource-nestjs",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "NestJS module for CyberSource REST API integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -40,7 +40,7 @@
     "rxjs": "^7.0.0"
   },
   "dependencies": {
-    "@infinitesolutions/cybersource-rest-client": "^1.0.1"
+    "@infinitesolutions/cybersource-rest-client": "^1.0.2"
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",
