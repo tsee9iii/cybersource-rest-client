@@ -41,7 +41,7 @@ To use this package in another project, you can install it directly from the rep
 
 ```bash
 # Install from GitHub repository
-npm install git+https://github.com/tsee9iii/nestjs-cybersource-rest-client.git
+npm install git+https://github.com/tsee9iii/cybersource-rest-client.git
 
 # Or if you publish to npm
 npm install @infinitesolutions/cybersource-rest-client
@@ -50,8 +50,8 @@ npm install @infinitesolutions/cybersource-rest-client
 ### Manual Installation
 
 ```bash
-git clone https://github.com/tsee9iii/nestjs-cybersource-rest-client.git
-cd nestjs-cybersource-rest-client
+git clone https://github.com/tsee9iii/cybersource-rest-client.git
+cd cybersource-rest-client
 npm install
 ```
 

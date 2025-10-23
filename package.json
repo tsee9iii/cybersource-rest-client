@@ -33,12 +33,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tsee9iii/nestjs-cybersource-rest-client.git"
+    "url": "git+https://github.com/tsee9iii/cybersource-rest-client.git"
   },
   "bugs": {
-    "url": "https://github.com/tsee9iii/nestjs-cybersource-rest-client/issues"
+    "url": "https://github.com/tsee9iii/cybersource-rest-client/issues"
   },
-  "homepage": "https://github.com/tsee9iii/nestjs-cybersource-rest-client#readme",
+  "homepage": "https://github.com/tsee9iii/cybersource-rest-client#readme",
   "devDependencies": {
     "@jest/globals": "^30.2.0",
     "@types/jest": "^30.0.0",
