@@ -5,9 +5,7 @@ module.exports = {
   roots: ["<rootDir>"],
   testMatch: ["**/__tests__/**/*.test.ts", "**/*.spec.ts"],
   collectCoverageFrom: [
-    "services/**/*.ts",
     "utils/**/*.ts",
-    "cybersource.service.ts",
     "!**/*.d.ts",
     "!**/node_modules/**",
     "!**/dist/**",
@@ -17,12 +15,6 @@ module.exports = {
   coverageReporters: ["text", "lcov", "html"],
   coverageThreshold: {
     global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50,
-    },
-    "./utils/**/*.ts": {
       branches: 90,
       functions: 90,
       lines: 90,

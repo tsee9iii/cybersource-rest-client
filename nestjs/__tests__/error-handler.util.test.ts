@@ -1,8 +1,9 @@
-import { describe, expect, test } from "@jest/globals";
+import { describe, expect, test, jest } from "@jest/globals";
 import {
   parseCyberSourceError,
   isRetryableError,
   createRetryStrategy,
+  logError,
 } from "../utils/error-handler.util";
 
 describe("Error Handler Utilities", () => {
@@ -406,6 +407,83 @@ describe("Error Handler Utilities", () => {
       const parsed = parseCyberSourceError(error);
       expect(parsed.userMessage).not.toContain("NullPointerException");
       expect(parsed.userMessage).toContain("server error");
+    });
+  });
+
+  describe("logError", () => {
+    let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
+
+    beforeEach(() => {
+      consoleErrorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
+    test("should log error with context", () => {
+      const error = {
+        response: {
+          status: 400,
+          data: {
+            status: "INVALID_CARD",
+            message: "Invalid card number",
+          },
+        },
+      };
+
+      const context = { operation: "createPayment", customerId: "123" };
+      logError(error, context);
+
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      const loggedData = consoleErrorSpy.mock.calls[0][1];
+      expect(loggedData).toMatchObject({
+        code: "INVALID_CARD",
+        retryable: false,
+        context,
+      });
+      expect(loggedData).toHaveProperty("timestamp");
+    });
+
+    test("should log error without context", () => {
+      const error = {
+        response: {
+          status: 500,
+          data: { message: "Server error" },
+        },
+      };
+
+      logError(error);
+
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      const loggedData = consoleErrorSpy.mock.calls[0][1];
+      expect(loggedData).toHaveProperty("code");
+      expect(loggedData).toHaveProperty("timestamp");
+      expect(loggedData.context).toBeUndefined();
+    });
+
+    test("should include all parsed error fields", () => {
+      const error = {
+        response: {
+          status: 400,
+          data: {
+            status: "DECLINED",
+            message: "Payment declined",
+            details: [{ field: "amount", reason: "Too high" }],
+          },
+        },
+      };
+
+      logError(error);
+
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      const loggedData = consoleErrorSpy.mock.calls[0][1];
+      expect(loggedData).toHaveProperty("code");
+      expect(loggedData).toHaveProperty("message");
+      expect(loggedData).toHaveProperty("userMessage");
+      expect(loggedData).toHaveProperty("retryable");
     });
   });
 });
