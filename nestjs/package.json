@@ -14,12 +14,14 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "test:sandbox": "npx ts-node tests/direct-sandbox-test.ts",
     "test:debug": "npx ts-node tests/debug-auth.ts",
     "test:minimal": "npx ts-node tests/minimal-test.ts",
     "test:services": "npx ts-node tests/test-available-services.ts",
-    "test:rbs": "npx ts-node tests/test-rbs-services.ts",
-    "setup:sandbox": "./examples/setup-sandbox.sh"
+    "test:rbs": "npx ts-node tests/test-rbs-services.ts"
   },
   "keywords": [
     "nestjs",
@@ -41,11 +43,15 @@
     "@infinitesolutions/cybersource-rest-client": "^1.0.0"
   },
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
     "@nestjs/common": "^11.1.6",
     "@nestjs/core": "^11.1.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
+    "jest": "^30.2.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "ts-jest": "^29.4.5",
     "typescript": "^5.0.0"
   }
 }

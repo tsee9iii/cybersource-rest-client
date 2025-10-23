@@ -55,8 +55,13 @@ class DirectSandboxTester {
     this.sharedSecretKey = process.env.CYBERSOURCE_SHARED_SECRET!;
 
     console.log("✅ Environment variables found:");
-    console.log(`   Merchant ID: ${this.merchantId}`);
-    console.log(`   API Key: ${this.apiKey}`);
+    console.log(`   Merchant ID: ${this.merchantId.substring(0, 8)}********`);
+    console.log(
+      `   API Key: ${this.apiKey.substring(0, 4)}****${this.apiKey.slice(-4)}`
+    );
+    console.log(
+      `   Secret Key Length: ${this.sharedSecretKey.length} characters`
+    );
     console.log(`   Base URL: ${this.baseUrl}`);
     console.log("");
   }

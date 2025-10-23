@@ -12,12 +12,10 @@ function debugAuthentication() {
 
   console.log("🔍 CyberSource Authentication Debug");
   console.log("=====================================");
-  console.log(`Merchant ID: ${merchantId}`);
-  console.log(`API Key: ${apiKey}`);
+  console.log(`Merchant ID: ${merchantId.substring(0, 8)}********`);
+  console.log(`API Key: ${apiKey.substring(0, 4)}****${apiKey.slice(-4)}`);
   console.log(`Shared Secret (length): ${sharedSecretKey.length} chars`);
-  console.log(
-    `Shared Secret (first 10): ${sharedSecretKey.substring(0, 10)}...`
-  );
+  console.log(`Shared Secret (first 4): ${sharedSecretKey.substring(0, 4)}...`);
   console.log("");
 
   // Test simple GET request
@@ -132,7 +130,14 @@ function debugAuthentication() {
   const signatureHeader = `keyid="${apiKey}", algorithm="HmacSHA256", headers="${headersList}", signature="${signatureValue}"`;
 
   console.log(`Headers List: ${headersList}`);
-  console.log(`Final Signature Header: ${signatureHeader}`);
+  console.log(
+    `Final Signature Header: keyid="${apiKey.substring(0, 4)}****${apiKey.slice(
+      -4
+    )}", algorithm="HmacSHA256", headers="${headersList}", signature="${signatureValue.substring(
+      0,
+      10
+    )}..."`
+  );
 }
 
 // Check environment variables

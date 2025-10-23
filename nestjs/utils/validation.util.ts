@@ -296,10 +296,37 @@ export function validateRoutingNumber(routingNumber: string): boolean {
  * ```
  */
 export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+  // Simple validation to avoid ReDoS vulnerability
+  // More permissive but safe against catastrophic backtracking
+  if (!email || email.length > 254) {
+    return false;
+  }
 
+  const atIndex = email.indexOf("@");
+  if (atIndex === -1 || atIndex === 0 || atIndex === email.length - 1) {
+    return false;
+  }
+
+  const localPart = email.substring(0, atIndex);
+  const domainPart = email.substring(atIndex + 1);
+
+  // Check for spaces or multiple @ signs
+  if (email.indexOf(" ") !== -1 || email.indexOf("@", atIndex + 1) !== -1) {
+    return false;
+  }
+
+  // Domain must have at least one dot and valid characters
+  if (domainPart.indexOf(".") === -1 || domainPart.length < 3) {
+    return false;
+  }
+
+  // Basic character validation - safe regex with bounded quantifiers
+  const safeLocalRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}$/;
+  const safeDomainRegex =
+    /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  return safeLocalRegex.test(localPart) && safeDomainRegex.test(domainPart);
+}
 /**
  * Validates a US ZIP code (5 digits or 5+4 format)
  *

@@ -67,9 +67,11 @@ async function testMinimalRequest() {
     } else if (response.status === 401) {
       console.log("❌ FAILED: Got 401 - Authentication failed");
       console.log("🔧 Debug info:");
-      console.log(`   Merchant ID: ${merchantId}`);
-      console.log(`   API Key: ${apiKey}`);
-      console.log(`   Secret length: ${sharedSecretKey.length}`);
+      console.log(`   Merchant ID: ${merchantId.substring(0, 8)}********`);
+      console.log(
+        `   API Key: ${apiKey.substring(0, 4)}****${apiKey.slice(-4)}`
+      );
+      console.log(`   Secret length: ${sharedSecretKey.length} characters`);
     } else {
       console.log(`ℹ️  Got ${response.status}: ${responseText}`);
     }

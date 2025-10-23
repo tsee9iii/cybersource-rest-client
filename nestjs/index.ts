@@ -16,3 +16,4 @@ export * from "./interfaces/payment-instrument.interfaces";
 export * from "./utils/cybersource-auth.util";
 export * from "./utils/validation.util";
 export * from "./utils/error-handler.util";
+export * from "./utils/security.util";
