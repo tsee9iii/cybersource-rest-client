@@ -13,7 +13,7 @@ A NestJS module for integrating with the CyberSource REST API with built-in HTTP
 ## Installation
 
 ````bash
-npm install @tsee9ii/cybersource-nestjs @tsee9ii/cybersource-rest-client
+npm install @infinitesolutions/cybersource-nestjs @infinitesolutions/cybersource-rest-client
 import { CyberSourceModule } from '@infinitesolutions/cybersource-nestjs'; # cybersource-rest-client NestJS Module
 
 A NestJS module wrapper for the CyberSource REST API client, providing seamless integration with NestJS applications.

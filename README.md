@@ -67,7 +67,7 @@ The library supports CyberSource's HTTP Signature authentication. You'll need:
 - API Key ID (keyid)
 - Shared Secret Key (Base64 encoded)
 
-**Important**: For proper security implementation, use the NestJS package (`@tsee9ii/cybersource-nestjs`) which includes automatic HTTP Signature authentication according to CyberSource specifications.
+**Important**: For proper security implementation, use the NestJS package (`@infinitesolutions/cybersource-nestjs`) which includes automatic HTTP Signature authentication according to CyberSource specifications.
 
 ## 📖 Usage
 
@@ -97,7 +97,7 @@ const cyberSourceApi = new Api({
 });
 ```
 
-**⚠️ Security Note**: For production use, we strongly recommend using the NestJS package (`@tsee9ii/cybersource-nestjs`) which includes built-in HTTP Signature authentication according to CyberSource's security requirements.
+**⚠️ Security Note**: For production use, we strongly recommend using the NestJS package (`@infinitesolutions/cybersource-nestjs`) which includes built-in HTTP Signature authentication according to CyberSource's security requirements.
 
 ### Example: Process a Payment
 

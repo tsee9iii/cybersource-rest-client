@@ -26,8 +26,8 @@ This guide helps you migrate from CyberSource REST Client v1.x to v2.0.0.
 ```json
 {
   "dependencies": {
-    "@tsee9ii/cybersource-rest-client": "^2.0.0",
-    "@tsee9ii/cybersource-nestjs": "^2.0.0"
+    "@infinitesolutions/cybersource-rest-client": "^2.0.0",
+    "@infinitesolutions/cybersource-nestjs": "^2.0.0"
   }
 }
 ```
@@ -41,13 +41,13 @@ import {
   PaymentsApi,
   CaptureApi,
   CreatePaymentRequest,
-} from "@tsee9ii/cybersource-rest-client";
+} from "@infinitesolutions/cybersource-rest-client";
 ```
 
 **v2.0.0:**
 
 ```typescript
-import { Api } from "@tsee9ii/cybersource-rest-client";
+import { Api } from "@infinitesolutions/cybersource-rest-client";
 ```
 
 ### 3. Update API Initialization
@@ -89,7 +89,7 @@ const result = response.data;
 **v1.x:**
 
 ```typescript
-import { CreatePaymentRequest } from "@tsee9ii/cybersource-rest-client";
+import { CreatePaymentRequest } from "@infinitesolutions/cybersource-rest-client";
 ```
 
 **v2.0.0:**
