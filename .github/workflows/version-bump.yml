@@ -20,10 +20,16 @@ on:
           - minor
           - major
 
+permissions:
+  contents: write
+
 jobs:
   bump-version:
     name: Bump Version
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code

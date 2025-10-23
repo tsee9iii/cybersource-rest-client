@@ -14,10 +14,17 @@ on:
           - nestjs
           - both
 
+permissions:
+  contents: read
+
 jobs:
   publish-root:
     name: Publish Root Package
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
     if: github.event_name == 'release' || github.event.inputs.package == 'root' || github.event.inputs.package == 'both'
 
     steps:
@@ -48,6 +55,10 @@ jobs:
   publish-nestjs:
     name: Publish NestJS Package
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     if: github.event_name == 'release' || github.event.inputs.package == 'nestjs' || github.event.inputs.package == 'both'
     needs: publish-root
 
