@@ -47,6 +47,8 @@ export abstract class BaseCyberSourceService {
           "customerId",
           "paymentInstrumentId",
           "shippingAddressId",
+          "planId",
+          "subscriptionId",
         ];
         for (const key of essentialKeys) {
           if (logData[key]) {
@@ -58,22 +60,8 @@ export abstract class BaseCyberSourceService {
       this.logger.log(`${operation} - ✅ Success`, successInfo);
       return response.data;
     } catch (error) {
-      // Create a concise error log
-      const errorInfo: any = {};
-      const errorResponse = (error as any)?.response;
-
-      if (errorResponse?.status) {
-        errorInfo.status = errorResponse.status;
-      }
-      if (errorResponse?.statusText) {
-        errorInfo.statusText = errorResponse.statusText;
-      }
-
-      // Include relevant error message
-      const errorMessage = this.getErrorMessage(error);
-      if (errorMessage && errorMessage !== "Unknown error occurred") {
-        errorInfo.message = errorMessage;
-      }
+      // Enhanced error handling for better debugging
+      const errorInfo = await this.parseErrorForLogging(error);
 
       // Include essential context from logData
       if (logData) {
@@ -81,6 +69,8 @@ export abstract class BaseCyberSourceService {
           "customerId",
           "paymentInstrumentId",
           "shippingAddressId",
+          "planId",
+          "subscriptionId",
         ];
         for (const key of essentialKeys) {
           if (logData[key]) {
@@ -91,17 +81,14 @@ export abstract class BaseCyberSourceService {
 
       this.logger.error(`${operation} - ❌ Failed`, errorInfo);
 
-      // Special handling for 415 Unsupported Media Type errors with detailed debug info
-      if (errorResponse?.status === 415) {
-        this.logger.debug("415 Unsupported Media Type - Debug Details:", {
-          contentType: (error as any)?.config?.headers?.["content-type"],
-          requestMethod: (error as any)?.config?.method,
-          requestUrl: (error as any)?.config?.url,
-          hasRequestBody: !!(error as any)?.config?.data,
-        });
+      // Special handling for 415 Unsupported Media Type errors
+      if (errorInfo.status === 415) {
+        await this.log415ErrorDetails(error, operation);
       }
 
-      throw error;
+      // Convert the error to a more useful format before throwing
+      const enhancedError = await this.enhanceError(error);
+      throw enhancedError;
     }
   }
 
@@ -128,6 +115,8 @@ export abstract class BaseCyberSourceService {
           "customerId",
           "paymentInstrumentId",
           "shippingAddressId",
+          "planId",
+          "subscriptionId",
         ];
         for (const key of essentialKeys) {
           if (logData[key]) {
@@ -138,21 +127,8 @@ export abstract class BaseCyberSourceService {
 
       this.logger.log(`${operation} - ✅ Success`, successInfo);
     } catch (error) {
-      // Create a concise error log
-      const errorInfo: any = {};
-      const errorResponse = (error as any)?.response;
-
-      if (errorResponse?.status) {
-        errorInfo.status = errorResponse.status;
-      }
-      if (errorResponse?.statusText) {
-        errorInfo.statusText = errorResponse.statusText;
-      }
-
-      const errorMessage = this.getErrorMessage(error);
-      if (errorMessage && errorMessage !== "Unknown error occurred") {
-        errorInfo.message = errorMessage;
-      }
+      // Enhanced error handling for better debugging
+      const errorInfo = await this.parseErrorForLogging(error);
 
       // Include essential context from logData
       if (logData) {
@@ -160,6 +136,8 @@ export abstract class BaseCyberSourceService {
           "customerId",
           "paymentInstrumentId",
           "shippingAddressId",
+          "planId",
+          "subscriptionId",
         ];
         for (const key of essentialKeys) {
           if (logData[key]) {
@@ -169,7 +147,15 @@ export abstract class BaseCyberSourceService {
       }
 
       this.logger.error(`${operation} - ❌ Failed`, errorInfo);
-      throw error;
+
+      // Special handling for 415 Unsupported Media Type errors
+      if (errorInfo.status === 415) {
+        await this.log415ErrorDetails(error, operation);
+      }
+
+      // Convert the error to a more useful format before throwing
+      const enhancedError = await this.enhanceError(error);
+      throw enhancedError;
     }
   }
 
@@ -250,5 +236,155 @@ export abstract class BaseCyberSourceService {
     };
 
     return sanitizeObject(sanitized);
+  }
+
+  /**
+   * Parse error information for logging purposes
+   * @param error - The error object to parse
+   * @returns Object with parsed error information
+   */
+  private async parseErrorForLogging(error: any): Promise<Record<string, any>> {
+    const errorInfo: Record<string, any> = {};
+
+    // Handle different types of errors
+    if (error instanceof Response) {
+      // Fetch Response object
+      errorInfo.status = error.status;
+      errorInfo.statusText = error.statusText;
+      errorInfo.url = error.url;
+      errorInfo.type = "fetch_response";
+
+      // Try to get response body
+      try {
+        const responseText = await error.clone().text();
+        if (responseText) {
+          try {
+            const responseJson = JSON.parse(responseText);
+            errorInfo.responseBody = responseJson;
+          } catch {
+            errorInfo.responseBody = responseText;
+          }
+        }
+      } catch {
+        errorInfo.responseBody = "Unable to read response body";
+      }
+
+      // Get headers
+      const headers: Record<string, string> = {};
+      error.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+      errorInfo.headers = headers;
+    } else if (error?.response) {
+      // Axios-style error
+      errorInfo.status = error.response.status;
+      errorInfo.statusText = error.response.statusText;
+      errorInfo.type = "axios_response";
+
+      if (error.response.data) {
+        errorInfo.responseBody = error.response.data;
+      }
+
+      if (error.response.headers) {
+        errorInfo.headers = error.response.headers;
+      }
+    } else if (error?.status) {
+      // Generic error with status
+      errorInfo.status = error.status;
+      errorInfo.statusText = error.statusText || error.message;
+      errorInfo.type = "generic_error";
+    } else {
+      // Unknown error type
+      errorInfo.type = "unknown_error";
+      errorInfo.message = error?.message || "Unknown error occurred";
+
+      if (error?.name) {
+        errorInfo.errorName = error.name;
+      }
+    }
+
+    return errorInfo;
+  }
+
+  /**
+   * Log detailed information for 415 Unsupported Media Type errors
+   * @param error - The error object
+   * @param operation - The operation that failed
+   */
+  private async log415ErrorDetails(
+    error: any,
+    operation: string
+  ): Promise<void> {
+    this.logger.error(`415 Unsupported Media Type Error - ${operation}`, {
+      message:
+        "The server cannot process the request format. This usually indicates a Content-Type issue.",
+      troubleshooting: [
+        "Check if Content-Type header is correctly set to 'application/json'",
+        "Verify the request body is properly formatted JSON",
+        "Ensure the API endpoint accepts the request format",
+        "Check for any required headers that might be missing",
+      ],
+      errorDetails: await this.parseErrorForLogging(error),
+    });
+  }
+
+  /**
+   * Enhance an error to provide more useful information
+   * @param error - The original error
+   * @returns Enhanced error with better debugging information
+   */
+  private async enhanceError(error: any): Promise<Error> {
+    const errorInfo = await this.parseErrorForLogging(error);
+
+    // Create a more descriptive error message
+    let message = `API Error (${errorInfo.status || "Unknown"})`;
+
+    if (errorInfo.status === 415) {
+      message = `Unsupported Media Type (415): The server cannot process the request format. Check Content-Type headers and request body formatting.`;
+    } else if (errorInfo.status === 400) {
+      message = `Bad Request (400): Invalid request data or format.`;
+    } else if (errorInfo.status === 401) {
+      message = `Unauthorized (401): Authentication failed or invalid credentials.`;
+    } else if (errorInfo.status === 403) {
+      message = `Forbidden (403): Access denied or insufficient permissions.`;
+    } else if (errorInfo.status === 404) {
+      message = `Not Found (404): The requested resource was not found.`;
+    } else if (errorInfo.status === 500) {
+      message = `Internal Server Error (500): Server-side error occurred.`;
+    }
+
+    // Add response body information if available
+    if (errorInfo.responseBody) {
+      if (typeof errorInfo.responseBody === "object") {
+        // Try to extract meaningful error details from response
+        const responseBody = errorInfo.responseBody;
+        if (responseBody.message) {
+          message += ` Server message: ${responseBody.message}`;
+        } else if (responseBody.error) {
+          message += ` Server error: ${responseBody.error}`;
+        } else if (responseBody.details) {
+          message += ` Details: ${JSON.stringify(responseBody.details)}`;
+        }
+      } else if (typeof errorInfo.responseBody === "string") {
+        // Include string response if it's not too long
+        const responseText = errorInfo.responseBody.substring(0, 200);
+        message += ` Server response: ${responseText}${
+          errorInfo.responseBody.length > 200 ? "..." : ""
+        }`;
+      }
+    }
+
+    // Create enhanced error
+    const enhancedError = new Error(message);
+
+    // Add additional properties for debugging
+    (enhancedError as any).originalError = error;
+    (enhancedError as any).status = errorInfo.status;
+    (enhancedError as any).statusText = errorInfo.statusText;
+    (enhancedError as any).headers = errorInfo.headers;
+    (enhancedError as any).responseBody = errorInfo.responseBody;
+    (enhancedError as any).errorType = errorInfo.type;
+
+    return enhancedError;
   }
 }
