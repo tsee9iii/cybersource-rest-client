@@ -77,10 +77,22 @@ jobs:
       - name: Create Git Tag
         run: |
           if [ "${{ github.event.inputs.package }}" == "root" ]; then
+            # Delete tag if it exists (locally and remotely)
+            git tag -d "v${{ env.ROOT_VERSION }}" 2>/dev/null || true
+            git push origin :refs/tags/v${{ env.ROOT_VERSION }} 2>/dev/null || true
+            # Create new tag
             git tag -a "v${{ env.ROOT_VERSION }}" -m "Release v${{ env.ROOT_VERSION }}"
           elif [ "${{ github.event.inputs.package }}" == "nestjs" ]; then
+            git tag -d "nestjs-v${{ env.NESTJS_VERSION }}" 2>/dev/null || true
+            git push origin :refs/tags/nestjs-v${{ env.NESTJS_VERSION }} 2>/dev/null || true
             git tag -a "nestjs-v${{ env.NESTJS_VERSION }}" -m "Release NestJS v${{ env.NESTJS_VERSION }}"
           else
+            # Delete both tags if they exist
+            git tag -d "v${{ env.ROOT_VERSION }}" 2>/dev/null || true
+            git push origin :refs/tags/v${{ env.ROOT_VERSION }} 2>/dev/null || true
+            git tag -d "nestjs-v${{ env.NESTJS_VERSION }}" 2>/dev/null || true
+            git push origin :refs/tags/nestjs-v${{ env.NESTJS_VERSION }} 2>/dev/null || true
+            # Create new tags
             git tag -a "v${{ env.ROOT_VERSION }}" -m "Release v${{ env.ROOT_VERSION }}"
             git tag -a "nestjs-v${{ env.NESTJS_VERSION }}" -m "Release NestJS v${{ env.NESTJS_VERSION }}"
           fi
