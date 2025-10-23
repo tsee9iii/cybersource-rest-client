@@ -7,3 +7,5 @@ export * from "./customer.service";
 export * from "./payment-instrument.service";
 export * from "./instrument-identifier.service";
 export * from "./tokenized-card.service";
+export * from "./plan.service";
+export * from "./subscription.service";

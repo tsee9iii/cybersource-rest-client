@@ -183,4 +183,8 @@ export class CyberSourceService {
   get reporting() {
     return this.api.reporting;
   }
+
+  get rbs() {
+    return this.api.rbs;
+  }
 }

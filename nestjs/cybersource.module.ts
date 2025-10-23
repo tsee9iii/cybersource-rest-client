@@ -8,6 +8,8 @@ import { CustomerService } from "./services/customer.service";
 import { PaymentInstrumentService } from "./services/payment-instrument.service";
 import { InstrumentIdentifierService } from "./services/instrument-identifier.service";
 import { TokenizedCardService } from "./services/tokenized-card.service";
+import { PlanService } from "./services/plan.service";
+import { SubscriptionService } from "./services/subscription.service";
 
 @Module({})
 export class CyberSourceModule {
@@ -28,6 +30,8 @@ export class CyberSourceModule {
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
+        PlanService,
+        SubscriptionService,
       ],
       exports: [
         CyberSourceService,
@@ -38,6 +42,8 @@ export class CyberSourceModule {
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
+        PlanService,
+        SubscriptionService,
       ],
     };
   }
@@ -66,6 +72,8 @@ export class CyberSourceModule {
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
+        PlanService,
+        SubscriptionService,
       ],
       exports: [
         CyberSourceService,
@@ -76,6 +84,8 @@ export class CyberSourceModule {
         PaymentInstrumentService,
         InstrumentIdentifierService,
         TokenizedCardService,
+        PlanService,
+        SubscriptionService,
       ],
     };
   }

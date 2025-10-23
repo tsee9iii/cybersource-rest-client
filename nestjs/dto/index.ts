@@ -4,3 +4,5 @@ export * from "./payment.dto";
 export * from "./response.dto";
 export * from "./customer.dto";
 export * from "./shipping-address.dto";
+export * from "./plan.dto";
+export * from "./subscription.dto";

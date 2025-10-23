@@ -10,6 +10,7 @@ This directory contains essential test scripts for the CyberSource NestJS packag
 - **`minimal-test.ts`** - Minimal test setup for basic functionality
 - **`test-available-services.ts`** - Validates all available services
 - **`debug-auth.ts`** - Debug authentication header generation
+- **`test-rbs-services.ts`** - Test RBS (Recurring Billing Subscriptions) services
 
 ## Running Tests
 
@@ -24,6 +25,9 @@ npm run test:minimal
 
 # Run authentication debug test
 npm run test:debug
+
+# Run RBS services test
+npm run test:rbs
 
 # Run service validation test
 npm run test:services
