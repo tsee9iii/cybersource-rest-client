@@ -64,9 +64,6 @@ jobs:
       github.event.inputs.package == 'nestjs' || 
       github.event.inputs.package == 'both'
 
-    # Only wait for root package if publishing both or release
-    needs: ${{ (github.event.inputs.package == 'both' || github.event_name == 'release') && fromJSON('["publish-root"]') || fromJSON('[]') }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -97,6 +94,12 @@ jobs:
         run: |
           cd nestjs
           npm run build
+
+      - name: Wait for root package (if publishing both)
+        if: github.event.inputs.package == 'both' || github.event_name == 'release'
+        run: |
+          echo "Waiting to ensure root package is published first..."
+          sleep 30
 
       - name: Publish to NPM
         run: |
