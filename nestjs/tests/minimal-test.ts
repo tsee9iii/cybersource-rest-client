@@ -3,7 +3,7 @@
  * Tests authentication with minimal request to isolate issues
  */
 
-import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
+import { CyberSourceAuthUtil } from "../utils/cybersource-auth.util";
 
 async function testMinimalRequest() {
   const merchantId = process.env.CYBERSOURCE_MERCHANT_ID!;

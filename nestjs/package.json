@@ -1,6 +1,6 @@
 {
   "name": "@infinitesolutions/cybersource-nestjs",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "NestJS module for CyberSource REST API integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,8 +15,9 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test:sandbox": "npx ts-node tests/direct-sandbox-test.ts",
-    "test:validate": "npx ts-node validate-services.ts",
     "test:debug": "npx ts-node tests/debug-auth.ts",
+    "test:minimal": "npx ts-node tests/minimal-test.ts",
+    "test:services": "npx ts-node tests/test-available-services.ts",
     "setup:sandbox": "./examples/setup-sandbox.sh"
   },
   "keywords": [

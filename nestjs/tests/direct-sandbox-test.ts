@@ -15,7 +15,7 @@
  * npx ts-node direct-sandbox-test.ts
  */
 
-import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
+import { CyberSourceAuthUtil } from "../utils/cybersource-auth.util";
 
 interface TestResults {
   testName: string;

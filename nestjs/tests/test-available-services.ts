@@ -3,7 +3,7 @@
  * Tests which services are actually enabled in your account
  */
 
-import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
+import { CyberSourceAuthUtil } from "../utils/cybersource-auth.util";
 
 async function testAvailableServices() {
   const merchantId = process.env.CYBERSOURCE_MERCHANT_ID!;

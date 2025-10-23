@@ -28,18 +28,79 @@ export abstract class BaseCyberSourceService {
     logData?: Record<string, any>
   ): Promise<T> {
     try {
-      this.logger.log(operation, logData);
+      this.logger.log(`${operation}...`);
       const response = await apiCall();
-      this.logger.log(`${operation} - Success`, {
-        ...logData,
-        id: (response.data as any)?.id,
-      });
+
+      // Create a concise success log
+      const successInfo: any = {};
+      const responseData = response.data as any;
+
+      if (responseData?.id) {
+        successInfo.id = responseData.id;
+      }
+      if (responseData?.status) {
+        successInfo.status = responseData.status;
+      }
+      if (logData && Object.keys(logData).length > 0) {
+        // Only include essential log data keys
+        const essentialKeys = [
+          "customerId",
+          "paymentInstrumentId",
+          "shippingAddressId",
+        ];
+        for (const key of essentialKeys) {
+          if (logData[key]) {
+            successInfo[key] = logData[key];
+          }
+        }
+      }
+
+      this.logger.log(`${operation} - ✅ Success`, successInfo);
       return response.data;
     } catch (error) {
-      this.logger.error(`${operation} - Failed`, {
-        ...logData,
-        error: this.getErrorMessage(error),
-      });
+      // Create a concise error log
+      const errorInfo: any = {};
+      const errorResponse = (error as any)?.response;
+
+      if (errorResponse?.status) {
+        errorInfo.status = errorResponse.status;
+      }
+      if (errorResponse?.statusText) {
+        errorInfo.statusText = errorResponse.statusText;
+      }
+
+      // Include relevant error message
+      const errorMessage = this.getErrorMessage(error);
+      if (errorMessage && errorMessage !== "Unknown error occurred") {
+        errorInfo.message = errorMessage;
+      }
+
+      // Include essential context from logData
+      if (logData) {
+        const essentialKeys = [
+          "customerId",
+          "paymentInstrumentId",
+          "shippingAddressId",
+        ];
+        for (const key of essentialKeys) {
+          if (logData[key]) {
+            errorInfo[key] = logData[key];
+          }
+        }
+      }
+
+      this.logger.error(`${operation} - ❌ Failed`, errorInfo);
+
+      // Special handling for 415 Unsupported Media Type errors with detailed debug info
+      if (errorResponse?.status === 415) {
+        this.logger.debug("415 Unsupported Media Type - Debug Details:", {
+          contentType: (error as any)?.config?.headers?.["content-type"],
+          requestMethod: (error as any)?.config?.method,
+          requestUrl: (error as any)?.config?.url,
+          hasRequestBody: !!(error as any)?.config?.data,
+        });
+      }
+
       throw error;
     }
   }
@@ -57,14 +118,57 @@ export abstract class BaseCyberSourceService {
     logData?: Record<string, any>
   ): Promise<void> {
     try {
-      this.logger.log(operation, logData);
+      this.logger.log(`${operation}...`);
       await apiCall();
-      this.logger.log(`${operation} - Success`, logData);
+
+      // Create a concise success log for void operations
+      const successInfo: any = {};
+      if (logData) {
+        const essentialKeys = [
+          "customerId",
+          "paymentInstrumentId",
+          "shippingAddressId",
+        ];
+        for (const key of essentialKeys) {
+          if (logData[key]) {
+            successInfo[key] = logData[key];
+          }
+        }
+      }
+
+      this.logger.log(`${operation} - ✅ Success`, successInfo);
     } catch (error) {
-      this.logger.error(`${operation} - Failed`, {
-        ...logData,
-        error: this.getErrorMessage(error),
-      });
+      // Create a concise error log
+      const errorInfo: any = {};
+      const errorResponse = (error as any)?.response;
+
+      if (errorResponse?.status) {
+        errorInfo.status = errorResponse.status;
+      }
+      if (errorResponse?.statusText) {
+        errorInfo.statusText = errorResponse.statusText;
+      }
+
+      const errorMessage = this.getErrorMessage(error);
+      if (errorMessage && errorMessage !== "Unknown error occurred") {
+        errorInfo.message = errorMessage;
+      }
+
+      // Include essential context from logData
+      if (logData) {
+        const essentialKeys = [
+          "customerId",
+          "paymentInstrumentId",
+          "shippingAddressId",
+        ];
+        for (const key of essentialKeys) {
+          if (logData[key]) {
+            errorInfo[key] = logData[key];
+          }
+        }
+      }
+
+      this.logger.error(`${operation} - ❌ Failed`, errorInfo);
       throw error;
     }
   }

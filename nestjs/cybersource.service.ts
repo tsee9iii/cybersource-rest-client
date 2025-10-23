@@ -46,7 +46,12 @@ export class CyberSourceService {
       ) => {
         const url = typeof input === "string" ? input : input.toString();
         const method = init?.method || "GET";
-        const body = init?.body;
+        let body = init?.body;
+
+        // Ensure body is properly stringified for POST/PUT/PATCH requests
+        if (body && typeof body !== "string" && !(body instanceof FormData)) {
+          body = JSON.stringify(body);
+        }
 
         // Extract host and path from the full URL
         const host = CyberSourceAuthUtil.extractHost(baseUrl);
@@ -59,7 +64,7 @@ export class CyberSourceService {
           sharedSecretKey: this.config.sharedSecretKey,
           method,
           path,
-          body,
+          body: body as string, // Pass the stringified body
           host,
         });
 
@@ -76,12 +81,14 @@ export class CyberSourceService {
           merchantId: this.config.merchantId,
           hasDigest: !!authHeaders.digest,
           hasSignature: !!authHeaders.signature,
+          contentType: headers["content-type"],
         });
 
-        // Make the request with authentication headers
+        // Make the request with authentication headers and properly formatted body
         return (globalThis as any).fetch(url, {
           ...init,
           headers,
+          body, // Use the potentially stringified body
         });
       },
     });

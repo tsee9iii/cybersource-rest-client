@@ -33,6 +33,7 @@ export class CyberSourceAuthUtil {
     // Generate digest for request body (if present)
     let digest: string | undefined;
     if (body && (method === "POST" || method === "PUT" || method === "PATCH")) {
+      // Ensure body is a string for digest calculation
       const bodyString = typeof body === "string" ? body : JSON.stringify(body);
       const hash = createHash("sha256")
         .update(bodyString, "utf8")
@@ -74,13 +75,13 @@ export class CyberSourceAuthUtil {
     // Build signature header value
     const signatureHeader = `keyid="${apiKey}", algorithm="HmacSHA256", headers="${headersList}", signature="${signatureValue}"`;
 
-    // Build final headers
+    // Build final headers - ensure Content-Type is properly set
     const headers: AuthHeaders = {
       "v-c-merchant-id": merchantId,
       date: date,
       signature: signatureHeader,
       host: host,
-      "content-type": "application/json",
+      "content-type": "application/json; charset=utf-8", // More explicit Content-Type
     };
 
     if (digest) {

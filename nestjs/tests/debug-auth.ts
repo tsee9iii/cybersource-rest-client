@@ -3,7 +3,7 @@
  * This script helps debug HTTP signature generation issues
  */
 
-import { CyberSourceAuthUtil } from "./utils/cybersource-auth.util";
+import { CyberSourceAuthUtil } from "../utils/cybersource-auth.util";
 
 function debugAuthentication() {
   const merchantId = process.env.CYBERSOURCE_MERCHANT_ID!;
