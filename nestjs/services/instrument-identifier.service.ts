@@ -233,6 +233,41 @@ export class InstrumentIdentifierService extends BaseCyberSourceService {
 
   // Helper methods for common use cases
 
+  /**
+   * Create a card-based instrument identifier with simplified parameters
+   *
+   * Instrument identifiers represent unique card numbers (PANs) or bank accounts.
+   * The same ID is returned for the same card number, enabling cross-channel tracking.
+   *
+   * @param card - Card information
+   * @param card.number - Primary Account Number (12-19 digits)
+   * @param card.expirationMonth - Two-digit month (01-12)
+   * @param card.expirationYear - Four-digit year (YYYY)
+   * @param card.securityCode - Optional CVV/CVC code
+   * @param card.type - Optional card network type
+   * @param billTo - Optional billing address information
+   * @param options - Additional options
+   * @param options.type - Whether card is enrollable for network tokenization (default: "enrollable card")
+   * @returns Promise resolving to the instrument identifier with optional BIN details
+   *
+   * @example
+   * ```typescript
+   * const instrument = await instrumentIdService.createCardInstrument({
+   *   number: "4111111111111111",
+   *   expirationMonth: "12",
+   *   expirationYear: "2025",
+   *   securityCode: "123"
+   * }, {
+   *   firstName: "John",
+   *   lastName: "Doe",
+   *   address1: "123 Main St",
+   *   locality: "San Francisco",
+   *   administrativeArea: "CA",
+   *   postalCode: "94102",
+   *   country: "US"
+   * });
+   * ```
+   */
   async createCardInstrument(
     card: {
       number: string;
@@ -255,6 +290,33 @@ export class InstrumentIdentifierService extends BaseCyberSourceService {
     return this.createInstrumentIdentifierV2(createDto);
   }
 
+  /**
+   * Create a bank account-based instrument identifier with simplified parameters
+   *
+   * Bank account instrument identifiers enable tokenization and tracking of ACH/eCheck
+   * payment methods using routing and account numbers.
+   *
+   * @param bankAccount - Bank account information
+   * @param bankAccount.routingNumber - Bank routing/transit number
+   * @param bankAccount.accountNumber - Bank account number
+   * @param bankAccount.type - Account type (checking, savings, corporate, etc.)
+   * @param bankAccount.checkNumber - Optional check number
+   * @param billTo - Optional billing address information
+   * @returns Promise resolving to the instrument identifier
+   *
+   * @example
+   * ```typescript
+   * const instrument = await instrumentIdService.createBankAccountInstrument({
+   *   routingNumber: "021000021",
+   *   accountNumber: "1234567890",
+   *   type: "checking"
+   * }, {
+   *   firstName: "John",
+   *   lastName: "Doe",
+   *   email: "john@example.com"
+   * });
+   * ```
+   */
   async createBankAccountInstrument(
     bankAccount: {
       routingNumber: string;
@@ -272,6 +334,39 @@ export class InstrumentIdentifierService extends BaseCyberSourceService {
     return this.createInstrumentIdentifierV2(createDto);
   }
 
+  /**
+   * Enroll a card for network token with simplified parameters
+   *
+   * Network token enrollment creates a token with the card network (Visa, Mastercard, etc.)
+   * that can be used instead of the PAN for better security and authorization rates.
+   * Tokens are not invalidated when cards are lost or expire.
+   *
+   * @param card - Card information for enrollment
+   * @param card.number - Primary Account Number (PAN)
+   * @param card.expirationMonth - Two-digit expiration month (01-12)
+   * @param card.expirationYear - Four-digit expiration year (YYYY)
+   * @param billTo - Optional billing address (may be required by some card networks)
+   * @param options - Additional enrollment options
+   * @param options.type - Token type (default: "enrollable card")
+   * @returns Promise resolving to the enrolled instrument with network token details
+   *
+   * @example
+   * ```typescript
+   * const enrolled = await instrumentIdService.enrollCardForNetworkToken({
+   *   number: "4111111111111111",
+   *   expirationMonth: "12",
+   *   expirationYear: "2025"
+   * }, {
+   *   firstName: "John",
+   *   lastName: "Doe",
+   *   address1: "123 Main St",
+   *   locality: "San Francisco",
+   *   administrativeArea: "CA",
+   *   postalCode: "94102",
+   *   country: "US"
+   * });
+   * ```
+   */
   async enrollCardForNetworkToken(
     card: {
       number: string;

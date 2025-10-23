@@ -110,10 +110,34 @@ export class TokenizedCardService extends BaseCyberSourceService {
   // Helper methods for common use cases
 
   /**
-   * Create a network token from card information
-   * @param card Card details
-   * @param options Creation options
-   * @returns Promise<TokenizedCardResponseDto>
+   * Create a network token from card information (PAN)
+   *
+   * This is the most common way to create network tokens. The card PAN is sent to
+   * the card network (Visa, Mastercard, Amex) which returns a network token that
+   * can be used for recurring payments without storing the actual card number.
+   *
+   * @param card - Card details including PAN, expiration, and card type
+   * @param card.number - Primary Account Number (PAN) - the actual card number
+   * @param card.expirationMonth - Two-digit expiration month (01-12)
+   * @param card.expirationYear - Four-digit expiration year (YYYY)
+   * @param card.type - Optional card network type (visa, mastercard, americanexpress)
+   * @param options - Additional creation options
+   * @param options.createInstrumentIdentifier - Whether to create an instrument identifier (default: true)
+   * @param options.consumerId - Optional consumer/wallet identifier (max 24 chars for VTS)
+   * @returns Promise resolving to the created tokenized card with network token details
+   *
+   * @example
+   * ```typescript
+   * const networkToken = await tokenizedCardService.createTokenFromCard({
+   *   number: "4111111111111111",
+   *   expirationMonth: "12",
+   *   expirationYear: "2025",
+   *   type: "visa"
+   * }, {
+   *   createInstrumentIdentifier: true,
+   *   consumerId: "customer-wallet-123"
+   * });
+   * ```
    */
   async createTokenFromCard(
     card: {
@@ -143,11 +167,27 @@ export class TokenizedCardService extends BaseCyberSourceService {
   }
 
   /**
-   * Create a network token from issuer account reference
-   * @param accountReferenceId Issuer account reference ID
-   * @param cardType Card network type
-   * @param options Creation options
-   * @returns Promise<TokenizedCardResponseDto>
+   * Create a network token from issuer account reference ID
+   *
+   * This method is used when the issuer has already provided an account reference ID.
+   * This is common in scenarios where the card is already on file with the issuer,
+   * or when working with issuer-specific tokenization programs.
+   *
+   * @param accountReferenceId - Unique identifier provided by the issuer for the account
+   * @param cardType - Card network type (visa, mastercard, americanexpress)
+   * @param options - Additional creation options
+   * @param options.createInstrumentIdentifier - Whether to create an instrument identifier (default: true)
+   * @param options.consumerId - Optional consumer/wallet identifier (max 24 chars for VTS)
+   * @returns Promise resolving to the created tokenized card with network token details
+   *
+   * @example
+   * ```typescript
+   * const networkToken = await tokenizedCardService.createTokenFromIssuerReference(
+   *   "c0e9dde7a241ec5e9e50cfd823a51c01",
+   *   "visa",
+   *   { createInstrumentIdentifier: true }
+   * );
+   * ```
    */
   async createTokenFromIssuerReference(
     accountReferenceId: string,
@@ -171,10 +211,31 @@ export class TokenizedCardService extends BaseCyberSourceService {
   }
 
   /**
-   * Create a network token from an existing network token
-   * @param existingToken Existing network token details
-   * @param options Creation options
-   * @returns Promise<TokenizedCardResponseDto>
+   * Create a network token from an existing network token (token-on-token)
+   *
+   * This method allows you to create a new network token from an existing network token
+   * (sometimes called a "digital PAN"). This is useful when you need to provision a
+   * network token to a new device or create a token for a different token requestor.
+   *
+   * @param existingToken - Existing network token details
+   * @param existingToken.number - The existing network token number (digital PAN)
+   * @param existingToken.expirationMonth - Two-digit expiration month (01-12)
+   * @param existingToken.expirationYear - Four-digit expiration year (YYYY)
+   * @param options - Additional creation options
+   * @param options.createInstrumentIdentifier - Whether to create an instrument identifier (default: true)
+   * @param options.consumerId - Optional consumer/wallet identifier (max 24 chars for VTS)
+   * @returns Promise resolving to the created tokenized card with new network token details
+   *
+   * @example
+   * ```typescript
+   * const newNetworkToken = await tokenizedCardService.createTokenFromExistingToken({
+   *   number: "4895370017256311", // existing network token
+   *   expirationMonth: "12",
+   *   expirationYear: "2031"
+   * }, {
+   *   createInstrumentIdentifier: true
+   * });
+   * ```
    */
   async createTokenFromExistingToken(
     existingToken: {
