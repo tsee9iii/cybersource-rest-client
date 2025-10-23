@@ -59,8 +59,13 @@ jobs:
     permissions:
       contents: write
 
-    if: github.event_name == 'release' || github.event.inputs.package == 'nestjs' || github.event.inputs.package == 'both'
-    needs: publish-root
+    if: |
+      github.event_name == 'release' || 
+      github.event.inputs.package == 'nestjs' || 
+      github.event.inputs.package == 'both'
+
+    # Only wait for root package if publishing both or release
+    needs: ${{ (github.event.inputs.package == 'both' || github.event_name == 'release') && fromJSON('["publish-root"]') || fromJSON('[]') }}
 
     steps:
       - name: Checkout code
