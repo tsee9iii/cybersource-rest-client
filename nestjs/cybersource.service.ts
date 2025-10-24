@@ -80,25 +80,87 @@ export class CyberSourceService {
           "Content-Type": authHeaders["content-type"],
         };
 
-        // Log authentication headers in debug mode (without sensitive data)
-        this.logger.debug("CyberSource request authentication", {
-          method,
-          path,
-          merchantId: this.config.merchantId,
-          hasDigest: !!authHeaders.digest,
-          hasSignature: !!authHeaders.signature,
-          contentType: headers["content-type"],
-          allHeaders: Object.keys(headers),
-          bodyType: typeof body,
-        });
+        // Debug logging - sanitize sensitive headers
+        if (this.config.debug) {
+          const sanitizedHeaders: Record<string, string> = {};
+          Object.entries(headers).forEach(([key, value]) => {
+            // Mask sensitive headers but show they exist
+            if (key.toLowerCase() === "signature") {
+              sanitizedHeaders[key] = `[${String(value).substring(
+                0,
+                20
+              )}...REDACTED]`;
+            } else if (key.toLowerCase() === "v-c-merchant-id") {
+              sanitizedHeaders[key] = `[${String(value).substring(
+                0,
+                8
+              )}...REDACTED]`;
+            } else {
+              sanitizedHeaders[key] = String(value);
+            }
+          });
+
+          this.logger.debug("=== CyberSource API Request ===", {
+            timestamp: new Date().toISOString(),
+            method,
+            url,
+            path,
+            headers: sanitizedHeaders,
+            body: body && typeof body === "object" ? body : "[string body]",
+            bodyLength: bodyForDigest?.length,
+          });
+        }
 
         // Make the request with authentication headers
-        // Note: body is passed as-is (object or string) and the API client will handle stringification
-        return (globalThis as any).fetch(url, {
-          ...init,
-          headers,
-          body, // Keep original body format - API client will stringify if needed
-        });
+        try {
+          const response = await (globalThis as any).fetch(url, {
+            ...init,
+            headers,
+            body, // Keep original body format - API client will stringify if needed
+          });
+
+          // Debug logging for response
+          if (this.config.debug) {
+            const responseHeaders: Record<string, string> = {};
+            response.headers.forEach((value: string, key: string) => {
+              responseHeaders[key] = value;
+            });
+
+            // Clone response to read body without consuming it
+            const clonedResponse = response.clone();
+            let responseData: any;
+            try {
+              const contentType = response.headers.get("content-type");
+              if (contentType?.includes("application/json")) {
+                responseData = await clonedResponse.json();
+              } else {
+                responseData = await clonedResponse.text();
+              }
+            } catch (error) {
+              responseData = "[Unable to parse response body]";
+            }
+
+            this.logger.debug("=== CyberSource API Response ===", {
+              timestamp: new Date().toISOString(),
+              status: response.status,
+              statusText: response.statusText,
+              headers: responseHeaders,
+              data: responseData,
+            });
+          }
+
+          return response;
+        } catch (error) {
+          if (this.config.debug) {
+            this.logger.error("=== CyberSource API Error ===", {
+              timestamp: new Date().toISOString(),
+              method,
+              url,
+              error: error instanceof Error ? error.message : String(error),
+            });
+          }
+          throw error;
+        }
       },
     });
 

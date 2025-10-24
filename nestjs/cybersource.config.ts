@@ -32,6 +32,12 @@ export interface CyberSourceConfig {
    * @default true
    */
   sandbox?: boolean;
+
+  /**
+   * Enable debug mode to log request/response details (non-sensitive data only)
+   * @default false
+   */
+  debug?: boolean;
 }
 
 export interface CyberSourceModuleOptions {

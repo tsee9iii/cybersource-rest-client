@@ -58,3 +58,15 @@ export interface TransactionInfo {
   status: string;
   processorInformation?: any;
 }
+
+export interface CyberSourceDebugInfo {
+  timestamp: string;
+  method: string;
+  url: string;
+  requestHeaders: Record<string, string>;
+  requestBody?: any;
+  responseStatus?: number;
+  responseHeaders?: Record<string, string>;
+  responseData?: any;
+  error?: any;
+}

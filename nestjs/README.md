@@ -653,8 +653,67 @@ interface CyberSourceConfig {
   basePath?: string; // Custom API endpoint (optional)
   timeout?: number; // Request timeout in milliseconds (default: 30000)
   sandbox?: boolean; // Use sandbox environment (default: true)
+  debug?: boolean; // Enable debug logging (default: false)
 }
 ```
+
+### Debug Mode
+
+Enable debug mode to see detailed request/response information (non-sensitive data only):
+
+```typescript
+CyberSourceModule.forRoot({
+  merchantId: "your-merchant-id",
+  apiKey: "your-api-key",
+  sharedSecretKey: "your-shared-secret",
+  sandbox: true,
+  debug: true, // Enable debug logging
+});
+```
+
+When debug mode is enabled, the module will log:
+
+- **Request details**: Method, URL, path, headers (with sensitive data redacted)
+- **Request body**: Full request payload for inspection
+- **Response details**: Status code, headers, response data
+- **Authentication info**: Digest and signature presence (values redacted)
+
+Example debug output:
+
+```
+[CyberSourceService] DEBUG === CyberSource API Request ===
+{
+  timestamp: '2024-10-24T10:30:45.123Z',
+  method: 'POST',
+  url: 'https://apitest.cybersource.com/tms/v2/paymentinstruments',
+  path: '/tms/v2/paymentinstruments',
+  headers: {
+    'host': 'apitest.cybersource.com',
+    'v-c-date': 'Thu, 24 Oct 2024 10:30:45 GMT',
+    'v-c-merchant-id': '[12345678...REDACTED]',
+    'signature': '[keyid="12345678...REDACTED]',
+    'digest': 'SHA-256=abc123...',
+    'content-type': 'application/json'
+  },
+  body: { /* your request data */ },
+  bodyLength: 256
+}
+
+[CyberSourceService] DEBUG === CyberSource API Response ===
+{
+  timestamp: '2024-10-24T10:30:45.456Z',
+  status: 201,
+  statusText: 'Created',
+  headers: { /* response headers */ },
+  data: { /* response data */ }
+}
+```
+
+⚠️ **Security Note**: Debug mode redacts sensitive information like:
+
+- API keys and secrets (never logged)
+- Signature values (only first 20 chars shown)
+- Merchant ID (only first 8 chars shown)
 
 ## Error Handling
 
