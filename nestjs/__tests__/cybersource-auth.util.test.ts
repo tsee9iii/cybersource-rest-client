@@ -24,10 +24,7 @@ describe("CyberSourceAuthUtil", () => {
       expect(headers).toHaveProperty("v-c-date");
       expect(headers).toHaveProperty("signature");
       expect(headers).toHaveProperty("host", mockParams.host);
-      expect(headers).toHaveProperty(
-        "content-type",
-        "application/json; charset=utf-8"
-      );
+      expect(headers).toHaveProperty("content-type", "application/json");
       expect(headers).not.toHaveProperty("digest");
     });
 
