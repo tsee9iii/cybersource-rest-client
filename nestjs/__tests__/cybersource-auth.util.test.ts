@@ -99,10 +99,7 @@ describe("CyberSourceAuthUtil", () => {
       expect(headers).toHaveProperty("digest");
       expect(headers).toHaveProperty("signature");
       expect(headers).toHaveProperty("host", mockParams.host);
-      expect(headers).toHaveProperty(
-        "content-type",
-        "application/json; charset=utf-8"
-      );
+      expect(headers).toHaveProperty("content-type", "application/json");
     });
 
     it("should generate correct SHA-256 digest for request body", () => {
