@@ -49,12 +49,13 @@ export class CyberSourceService {
         let body = init?.body;
         let bodyForDigest: string | undefined;
 
-        // Stringify body for digest calculation if needed
-        if (body && typeof body !== "string" && !(body instanceof FormData)) {
-          bodyForDigest = JSON.stringify(body);
-          // Keep body as object - let the API client handle stringification
-        } else if (typeof body === "string") {
+        // The API client already stringifies the body before calling customFetch
+        // So body should already be a string for JSON requests
+        if (typeof body === "string") {
           bodyForDigest = body;
+        } else if (body && !(body instanceof FormData)) {
+          // Fallback: stringify if somehow it's still an object
+          bodyForDigest = JSON.stringify(body);
         }
 
         // Extract host and path from the full URL
@@ -73,11 +74,15 @@ export class CyberSourceService {
         });
 
         // Merge authentication headers with existing headers
+        // Note: Remove the lowercase 'content-type' since we'll set 'Content-Type' explicitly
+        const { ["content-type"]: _, ...authHeadersWithoutContentType } =
+          authHeaders;
+
         const headers = {
           ...init?.headers,
-          ...authHeaders,
-          // Ensure Content-Type is set (case-sensitive for some systems)
-          "Content-Type": authHeaders["content-type"],
+          ...authHeadersWithoutContentType,
+          // Set Content-Type with proper casing (HTTP headers are case-insensitive but some servers are picky)
+          "Content-Type": "application/json",
         };
 
         // Debug logging - sanitize sensitive headers
@@ -106,8 +111,17 @@ export class CyberSourceService {
             url,
             path,
             headers: sanitizedHeaders,
-            body: body && typeof body === "object" ? body : "[string body]",
+            bodyType: typeof body,
+            bodyIsString: typeof body === "string",
+            bodyPreview: body
+              ? typeof body === "string"
+                ? body.substring(0, 200)
+                : "[non-string body]"
+              : null,
             bodyLength: bodyForDigest?.length,
+            bodyForDigestPreview: bodyForDigest?.substring(0, 200),
+            bodyMatchesDigestSource: body === bodyForDigest,
+            digestCalculatedFrom: bodyForDigest ? "string body" : "no body",
           });
         }
 

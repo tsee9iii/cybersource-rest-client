@@ -1,37 +1,40 @@
 # Test Files
 
-This directory contains essential test scripts for the CyberSource NestJS package.
+This directory contains test scripts for the CyberSource NestJS package.
 
 ## Available Tests
 
-### Core Tests
+### Integration Tests
 
-- **`direct-sandbox-test.ts`** - Direct API testing with sandbox environment
-- **`minimal-test.ts`** - Minimal test setup for basic functionality
-- **`test-available-services.ts`** - Validates all available services
-- **`debug-auth.ts`** - Debug authentication header generation
-- **`test-rbs-services.ts`** - Test RBS (Recurring Billing Subscriptions) services
+- **`test-plan-creation.ts`** - Test RBS plan creation with debug logging (requires .env file with credentials)
 
 ## Running Tests
 
-You can run specific tests using the npm scripts:
-
 ```bash
-# Run sandbox test
-npm run test:sandbox
+# Create .env file first (see .env.example in parent directory)
+cp ../.env.example ../.env
+# Edit .env with your credentials
 
-# Run minimal test
-npm run test:minimal
+# Run plan creation test with debug output
+npm run test:plan
+```
 
-# Run authentication debug test
-npm run test:debug
+## Debug Mode
 
-# Run RBS services test
-npm run test:rbs
+All tests support debug mode by setting `debug: true` in the module configuration. This will show:
+
+- Request headers (sensitive data redacted)
+- Request body and digest calculation
+- Response headers and data
+- Timing information
+
+See `examples/debug-mode-example.ts` for more details on using debug mode.
 
 # Run service validation test
+
 npm run test:services
-```
+
+````
 
 ## Environment Setup
 
@@ -42,7 +45,7 @@ export CYBERSOURCE_MERCHANT_ID="your_merchant_id"
 export CYBERSOURCE_API_KEY="your_api_key"
 export CYBERSOURCE_SHARED_SECRET="your_shared_secret"
 export CYBERSOURCE_ENVIRONMENT="sandbox"  # or "production"
-```
+````
 
 ## Test Files Purpose
 
