@@ -21,7 +21,7 @@ describe("CyberSourceAuthUtil", () => {
       const headers = CyberSourceAuthUtil.generateAuthHeaders(params);
 
       expect(headers).toHaveProperty("v-c-merchant-id", mockParams.merchantId);
-      expect(headers).toHaveProperty("date");
+      expect(headers).toHaveProperty("v-c-date");
       expect(headers).toHaveProperty("signature");
       expect(headers).toHaveProperty("host", mockParams.host);
       expect(headers).toHaveProperty(
@@ -41,7 +41,7 @@ describe("CyberSourceAuthUtil", () => {
       const headers = CyberSourceAuthUtil.generateAuthHeaders(params);
 
       // RFC1123 format: "Wed, 23 Oct 2025 12:34:56 GMT"
-      expect(headers.date).toMatch(
+      expect(headers["v-c-date"]).toMatch(
         /^[A-Za-z]{3}, \d{2} [A-Za-z]{3} \d{4} \d{2}:\d{2}:\d{2} GMT$/
       );
     });
@@ -58,7 +58,7 @@ describe("CyberSourceAuthUtil", () => {
       expect(headers.signature).toContain('keyid="test-api-key-uuid"');
       expect(headers.signature).toContain('algorithm="HmacSHA256"');
       expect(headers.signature).toContain(
-        'headers="host date request-target v-c-merchant-id"'
+        'headers="host v-c-date request-target v-c-merchant-id"'
       );
       expect(headers.signature).toContain('signature="');
     });
@@ -95,7 +95,7 @@ describe("CyberSourceAuthUtil", () => {
       const headers = CyberSourceAuthUtil.generateAuthHeaders(params);
 
       expect(headers).toHaveProperty("v-c-merchant-id", mockParams.merchantId);
-      expect(headers).toHaveProperty("date");
+      expect(headers).toHaveProperty("v-c-date");
       expect(headers).toHaveProperty("digest");
       expect(headers).toHaveProperty("signature");
       expect(headers).toHaveProperty("host", mockParams.host);
@@ -153,7 +153,7 @@ describe("CyberSourceAuthUtil", () => {
       const headers = CyberSourceAuthUtil.generateAuthHeaders(params);
 
       expect(headers.signature).toContain(
-        'headers="host date request-target digest v-c-merchant-id"'
+        'headers="host v-c-date request-target digest v-c-merchant-id"'
       );
     });
 

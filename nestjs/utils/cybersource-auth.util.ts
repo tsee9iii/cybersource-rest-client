@@ -12,7 +12,7 @@ export interface CyberSourceAuthParams {
 
 export interface AuthHeaders {
   "v-c-merchant-id": string;
-  date: string;
+  "v-c-date": string;
   digest?: string;
   signature: string;
   host: string;
@@ -47,7 +47,7 @@ export class CyberSourceAuthUtil {
     // Build signature string (order is critical!)
     const signatureStringParts: string[] = [
       `host: ${host}`,
-      `date: ${date}`,
+      `v-c-date: ${date}`,
       `request-target: ${requestTarget}`,
     ];
 
@@ -69,8 +69,8 @@ export class CyberSourceAuthUtil {
 
     // Build headers list for signature header
     const headersList = digest
-      ? "host date request-target digest v-c-merchant-id"
-      : "host date request-target v-c-merchant-id";
+      ? "host v-c-date request-target digest v-c-merchant-id"
+      : "host v-c-date request-target v-c-merchant-id";
 
     // Build signature header value
     const signatureHeader = `keyid="${apiKey}", algorithm="HmacSHA256", headers="${headersList}", signature="${signatureValue}"`;
@@ -78,10 +78,10 @@ export class CyberSourceAuthUtil {
     // Build final headers - ensure Content-Type is properly set
     const headers: AuthHeaders = {
       "v-c-merchant-id": merchantId,
-      date: date,
+      "v-c-date": date,
       signature: signatureHeader,
       host: host,
-      "content-type": "application/json; charset=utf-8", // More explicit Content-Type
+      "content-type": "application/json",
     };
 
     if (digest) {
