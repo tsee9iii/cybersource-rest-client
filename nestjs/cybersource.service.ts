@@ -47,10 +47,14 @@ export class CyberSourceService {
         const url = typeof input === "string" ? input : input.toString();
         const method = init?.method || "GET";
         let body = init?.body;
+        let bodyForDigest: string | undefined;
 
-        // Ensure body is properly stringified for POST/PUT/PATCH requests
+        // Stringify body for digest calculation if needed
         if (body && typeof body !== "string" && !(body instanceof FormData)) {
-          body = JSON.stringify(body);
+          bodyForDigest = JSON.stringify(body);
+          // Keep body as object - let the API client handle stringification
+        } else if (typeof body === "string") {
+          bodyForDigest = body;
         }
 
         // Extract host and path from the full URL
@@ -64,7 +68,7 @@ export class CyberSourceService {
           sharedSecretKey: this.config.sharedSecretKey,
           method,
           path,
-          body: body as string, // Pass the stringified body
+          body: bodyForDigest, // Pass the stringified version for digest
           host,
         });
 
@@ -72,6 +76,8 @@ export class CyberSourceService {
         const headers = {
           ...init?.headers,
           ...authHeaders,
+          // Ensure Content-Type is set (case-sensitive for some systems)
+          "Content-Type": authHeaders["content-type"],
         };
 
         // Log authentication headers in debug mode (without sensitive data)
@@ -82,13 +88,16 @@ export class CyberSourceService {
           hasDigest: !!authHeaders.digest,
           hasSignature: !!authHeaders.signature,
           contentType: headers["content-type"],
+          allHeaders: Object.keys(headers),
+          bodyType: typeof body,
         });
 
-        // Make the request with authentication headers and properly formatted body
+        // Make the request with authentication headers
+        // Note: body is passed as-is (object or string) and the API client will handle stringification
         return (globalThis as any).fetch(url, {
           ...init,
           headers,
-          body, // Use the potentially stringified body
+          body, // Keep original body format - API client will stringify if needed
         });
       },
     });
