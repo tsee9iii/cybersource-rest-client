@@ -99,6 +99,12 @@ export interface CustomerCreateDto {
 
 export interface CustomerUpdateDto {
   /**
+   * The Id of the Customer Token.
+   * Min length: 1, Max length: 32
+   */
+  id?: string;
+
+  /**
    * Object information about the customer
    */
   objectInformation?: {
