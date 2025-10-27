@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { CyberSourceService } from "../cybersource.service";
 import { BaseCyberSourceService } from "./base.service";
-import { CreateTokenDto, CreateCustomerDto } from "../dto/payment.dto";
+import { CreateTokenDto } from "../dto/payment.dto";
+import { CustomerCreateDto } from "../dto/customer.dto";
 import {
   TokenResponse,
   CustomerResponse,
@@ -53,7 +54,7 @@ export class TokenService extends BaseCyberSourceService {
    * @deprecated Use CustomerService.createCustomer instead
    */
   async createCustomer(
-    request: CreateCustomerDto
+    request: CustomerCreateDto
   ): Promise<CyberSourceResult<CustomerResponse>> {
     try {
       this.logger.log("Creating customer profile");
@@ -121,7 +122,7 @@ export class TokenService extends BaseCyberSourceService {
    */
   async updateCustomer(
     customerId: string,
-    request: Partial<CreateCustomerDto>
+    request: Partial<CustomerCreateDto>
   ): Promise<CyberSourceResult<CustomerResponse>> {
     try {
       this.logger.log("Updating customer", { customerId });
