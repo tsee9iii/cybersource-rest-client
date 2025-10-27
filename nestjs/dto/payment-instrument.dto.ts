@@ -12,7 +12,7 @@ export interface PaymentInstrumentTokenizedInfoDto {
    * Value that identifies your business and indicates that the cardholder's account number is tokenized.
    * This value is assigned by the token service provider and is unique within the token service provider's database.
    * Note: This field is supported only through VisaNet and FDC Nashville Global.
-   * Max length: 11
+   * @maxLength 11
    */
   requestorID?: string;
 
@@ -20,7 +20,7 @@ export interface PaymentInstrumentTokenizedInfoDto {
    * Type of transaction that provided the token data. This value does not specify the token service provider;
    * it specifies the entity that provided you with information about the token.
    * Set the value for this field to 1. An application on the customer's mobile device provided the token data.
-   * Max length: 1
+   * @maxLength 1
    */
   transactionType?: string;
 }
@@ -33,14 +33,14 @@ export interface PaymentInstrumentCardDto {
   /**
    * Two-digit month in which the payment card expires.
    * Format: MM, Possible Values: 01 through 12
-   * Max length: 2
+   * @maxLength 2
    */
   expirationMonth?: string;
 
   /**
    * Four-digit year in which the credit card expires.
    * Format: YYYY
-   * Max length: 4
+   * @maxLength 4
    */
   expirationYear?: string;
 
@@ -66,7 +66,7 @@ export interface PaymentInstrumentCardDto {
    * Number of times a Maestro (UK Domestic) card has been issued to the account holder.
    * The card might or might not have an issue number. The number can consist of one or two digits,
    * and the first digit might be a zero. Do not include if not a Maestro (UK Domestic) card.
-   * Max length: 2
+   * @maxLength 2
    */
   issueNumber?: string;
 
@@ -74,7 +74,7 @@ export interface PaymentInstrumentCardDto {
    * Month of the start of the Maestro (UK Domestic) card validity period.
    * Format: MM, Possible Values: 01 through 12
    * Do not include if not a Maestro (UK Domestic) card.
-   * Max length: 2
+   * @maxLength 2
    */
   startMonth?: string;
 
@@ -82,7 +82,7 @@ export interface PaymentInstrumentCardDto {
    * Year of the start of the Maestro (UK Domestic) card validity period.
    * Format: YYYY
    * Do not include if not a Maestro (UK Domestic) card.
-   * Max length: 4
+   * @maxLength 4
    */
   startYear?: string;
 
@@ -115,14 +115,14 @@ export interface PaymentInstrumentBankAccountDto {
    * - general ledger (G) - supported only on Wells Fargo ACH
    * - savings (S) - U.S. dollars only
    * - corporate checking (X) - U.S. dollars only
-   * Max length: 18
+   * @maxLength 18
    */
   type?: "checking" | "general ledger" | "savings" | "corporate checking";
 
   /**
    * Account number.
    * When processing encoded account numbers, use this field for the encoded account number.
-   * Max length: 17
+   * @maxLength 17
    */
   number?: string;
 
@@ -139,7 +139,7 @@ export interface PaymentInstrumentIssuedByDto {
   /**
    * The State or province where the customer's driver's license was issued.
    * Use the two-character State, Province, and Territory Codes for the United States and Canada.
-   * Max length: 20
+   * @maxLength 20
    */
   administrativeArea?: string;
 }
@@ -150,7 +150,7 @@ export interface PaymentInstrumentIssuedByDto {
 export interface PaymentInstrumentPersonalIdentificationDto {
   /**
    * The value of the identification type
-   * Max length: 26
+   * @maxLength 26
    */
   id?: string;
 
@@ -172,7 +172,7 @@ export interface PaymentInstrumentPersonalIdentificationDto {
 export interface PaymentInstrumentBuyerInformationDto {
   /**
    * Company's tax identifier. This is only used for eCheck service.
-   * Max length: 9
+   * @maxLength 9
    */
   companyTaxID?: string;
 
@@ -180,7 +180,7 @@ export interface PaymentInstrumentBuyerInformationDto {
    * Currency used for the order. Use the three-character ISO Standard Currency Codes.
    * For an authorization reversal or a capture, you must use the same currency that you used
    * in your payment authorization request.
-   * Max length: 3
+   * @maxLength 3
    */
   currency?: string;
 
@@ -202,44 +202,44 @@ export interface PaymentInstrumentBuyerInformationDto {
 export interface PaymentInstrumentBillToDto {
   /**
    * Customer's first name. This name must be the same as the name on the card.
-   * Max length: 60
+   * @maxLength 60
    */
   firstName?: string;
 
   /**
    * Customer's last name. This name must be the same as the name on the card.
-   * Max length: 60
+   * @maxLength 60
    */
   lastName?: string;
 
   /**
    * Name of the customer's company.
-   * Max length: 60
+   * @maxLength 60
    */
   company?: string;
 
   /**
    * Payment card billing street address as it appears on the credit card issuer's records.
-   * Max length: 60
+   * @maxLength 60
    */
   address1?: string;
 
   /**
    * Additional address information.
-   * Max length: 60
+   * @maxLength 60
    */
   address2?: string;
 
   /**
    * Payment card billing city.
-   * Max length: 50
+   * @maxLength 50
    */
   locality?: string;
 
   /**
    * State or province of the billing address. Use the State, Province, and Territory Codes
    * for the United States and Canada.
-   * Max length: 20
+   * @maxLength 20
    */
   administrativeArea?: string;
 
@@ -251,25 +251,25 @@ export interface PaymentInstrumentBillToDto {
    *
    * When the billing country is Canada, the 6-digit postal code must follow this format:
    * [alpha][numeric][alpha][space][numeric][alpha][numeric] (Example: A1B 2C3)
-   * Max length: 10
+   * @maxLength 10
    */
   postalCode?: string;
 
   /**
    * Payment card billing country. Use the two-character ISO Standard Country Codes.
-   * Max length: 2
+   * @maxLength 2
    */
   country?: string;
 
   /**
    * Customer's email address, including the full domain name.
-   * Max length: 255
+   * @maxLength 255
    */
   email?: string;
 
   /**
    * Customer's phone number.
-   * Max length: 15
+   * @maxLength 15
    */
   phoneNumber?: string;
 }
@@ -288,7 +288,7 @@ export interface PaymentInstrumentBankTransferOptionsDto {
    * - PPD: prearranged payment and deposit entry
    * - TEL: telephone-initiated entry
    * - WEB: internet-initiated entry
-   * Max length: 3
+   * @maxLength 3
    */
   SECCode?: "ARC" | "CCD" | "POP" | "PPD" | "TEL" | "WEB";
 }
@@ -320,7 +320,7 @@ export interface PaymentInstrumentMerchantDescriptorDto {
    * This value might be displayed on the cardholder's statement.
    * When you do not include this value in your capture or credit request, the merchant URL from your CyberSource account is used.
    * Important: This value must consist of English characters.
-   * Max length: 13
+   * @maxLength 13
    */
   alternateName?: string;
 }
@@ -341,7 +341,8 @@ export interface PaymentInstrumentMerchantInformationDto {
 export interface PaymentInstrumentInstrumentIdentifierDto {
   /**
    * The Id of the Instrument Identifier linked to the Payment Instrument.
-   * Min length: 12, Max length: 32
+   * @minLength 12
+   * @maxLength 32
    */
   id?: string;
 }
@@ -388,32 +389,32 @@ export interface PaymentInstrumentBinCardDto {
   /**
    * 3-digit numeric value that indicates the card type within Cybersource eco-system.
    * Possible values: 000-082 (see documentation for full list)
-   * Max length: 3
+   * @maxLength 3
    */
   type?: string;
 
   /**
    * Card brand name (VISA, MASTERCARD, AMERICAN EXPRESS, etc.)
-   * Max length: 20
+   * @maxLength 20
    */
   brandName?: string;
 
   /**
    * 3-letter ISO Standard Currency Code for the card currency
-   * Max length: 3
+   * @maxLength 3
    */
   currency?: string;
 
   /**
    * Max length of the card
-   * Max length: 2
+   * @maxLength 2
    */
   maxLength?: string;
 
   /**
    * Type of the payment credential
    * Possible values: PAN, TOKEN
-   * Max length: 5
+   * @maxLength 5
    */
   credentialType?: string;
 
@@ -438,43 +439,43 @@ export interface PaymentInstrumentBinCardDto {
 export interface PaymentInstrumentBinFeaturesDto {
   /**
    * Account funding source (CREDIT, DEBIT, PREPAID, DEFERRED DEBIT, CHARGE)
-   * Max length: 20
+   * @maxLength 20
    */
   accountFundingSource?: string;
 
   /**
    * Type of prepaid card (Reloadable, Non-reloadable)
-   * Max length: 20
+   * @maxLength 20
    */
   accountFundingSourceSubType?: string;
 
   /**
    * Type of issuer product (Visa Classic, Visa Signature, Visa Infinite)
-   * Max length: 50
+   * @maxLength 50
    */
   cardProduct?: string;
 
   /**
    * Type of BIN based authentication (S: Single Message, D: Dual Message)
-   * Max length: 1
+   * @maxLength 1
    */
   messageType?: string;
 
   /**
    * Acceptance level of the PAN (0: Normal, 1: Monitor, 2: Refuse, 3: Not Allowed, 4: Private, 5: Test)
-   * Max length: 2
+   * @maxLength 2
    */
   acceptanceLevel?: string;
 
   /**
    * Type of card platform (BUSINESS, CONSUMER, CORPORATE, COMMERCIAL, GOVERNMENT)
-   * Max length: 20
+   * @maxLength 20
    */
   cardPlatform?: string;
 
   /**
    * Type of combo card (0: Not combo, 1: Credit/Prepaid, 2: Credit/Debit, 3: Prepaid Credit/Debit)
-   * Max length: 1
+   * @maxLength 1
    */
   comboCard?: string;
 
@@ -580,31 +581,31 @@ export interface PaymentInstrumentBinNetworkDto {
 export interface PaymentInstrumentBinIssuerDto {
   /**
    * Issuer name
-   * Max length: 200
+   * @maxLength 200
    */
   name?: string;
 
   /**
    * 2-character ISO Country Code for the issuer
-   * Max length: 2
+   * @maxLength 2
    */
   country?: string;
 
   /**
    * Length of the BIN
-   * Max length: 2
+   * @maxLength 2
    */
   binLength?: string;
 
   /**
    * First 6 to 8 digits of primary account number (PAN)
-   * Max length: 8
+   * @maxLength 8
    */
   accountPrefix?: string;
 
   /**
    * Customer service phone number for the issuer
-   * Max length: 50
+   * @maxLength 50
    */
   phoneNumber?: string;
 }
@@ -662,7 +663,8 @@ export interface PaymentInstrumentCreateDto {
   /**
    * The Id of the Payment Instrument Token.
    * If not provided, CyberSource will generate one automatically.
-   * Min length: 1, Max length: 32
+   * @minLength 1
+   * @maxLength 32
    */
   id?: string;
 
@@ -722,7 +724,8 @@ export interface PaymentInstrumentUpdateDto {
 
   /**
    * The Id of the Payment Instrument Token.
-   * Min length: 1, Max length: 32
+   * @minLength 1
+   * @maxLength 32
    */
   id?: string;
 
@@ -782,7 +785,8 @@ export interface PaymentInstrumentResponseDto {
 
   /**
    * The Id of the Payment Instrument Token
-   * Min length: 1, Max length: 32
+   * @minLength 1
+   * @maxLength 32
    */
   id?: string;
 
