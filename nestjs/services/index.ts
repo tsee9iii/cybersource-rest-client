@@ -1,7 +1,6 @@
 // Service exports for easy importing
 export * from "./base.service";
 export * from "./payment.service";
-export * from "./token.service";
 export * from "./verification.service";
 export * from "./customer.service";
 export * from "./payment-instrument.service";

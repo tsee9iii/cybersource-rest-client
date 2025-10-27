@@ -56,12 +56,6 @@ export interface SaleDto extends CreatePaymentDto {
   };
 }
 
-// Token Management DTOs
-export interface CreateTokenDto {
-  clientReferenceInformation?: ClientReferenceInformationDto;
-  paymentInformation: PaymentInformationDto;
-}
-
 // Note: Customer DTOs are defined in customer.dto.ts
 // Import from there: CustomerCreateDto, CustomerUpdateDto, CustomerResponseDto, etc.
 

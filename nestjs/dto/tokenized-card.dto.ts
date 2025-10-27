@@ -109,18 +109,22 @@ export interface TokenizedCardInfoDto {
   /**
    * The customer's payment card number (PAN)
    * Required for ONFILE source
+   * @minLength 12
+   * @maxLength 19
    */
   number?: string;
 
   /**
    * Two-digit expiration month (01-12)
    * Format: MM
+   * @maxLength 2
    */
   expirationMonth?: string;
 
   /**
    * Four-digit expiration year
    * Format: YYYY
+   * @maxLength 4
    */
   expirationYear?: string;
 
@@ -170,6 +174,7 @@ export interface TokenizedCardBaseDto {
   /**
    * Identifier of the consumer within the wallet
    * Maximum 24 characters for VTS
+   * @maxLength 36
    */
   consumerId?: string;
 
@@ -263,6 +268,7 @@ export interface TokenizedCardBaseDto {
 
   /**
    * 11-digit identifier that uniquely identifies the Token Requestor
+   * @maxLength 11
    */
   readonly requestorId?: string;
 
@@ -310,6 +316,7 @@ export interface TokenizedCardCreateDto {
   /**
    * Identifier of the consumer within the wallet
    * Maximum 24 characters for VTS
+   * @maxLength 36
    */
   consumerId?: string;
 

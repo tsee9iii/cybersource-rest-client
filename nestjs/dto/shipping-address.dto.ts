@@ -1,5 +1,11 @@
 export interface ShippingAddressCreateDto {
   /**
+   * The Id of the Shipping Address Token.
+   * Min length: 1, Max length: 32
+   */
+  id?: string;
+
+  /**
    * Flag that indicates whether customer shipping address is the default.
    * Possible Values:
    * - `true`: Shipping Address is customer's default.
@@ -84,6 +90,12 @@ export interface ShippingAddressCreateDto {
 }
 
 export interface ShippingAddressUpdateDto {
+  /**
+   * The Id of the Shipping Address Token.
+   * Min length: 1, Max length: 32
+   */
+  id?: string;
+
   /**
    * Flag that indicates whether customer shipping address is the default.
    * Possible Values:

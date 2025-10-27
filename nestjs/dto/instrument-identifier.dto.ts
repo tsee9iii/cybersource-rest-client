@@ -671,6 +671,14 @@ export interface InstrumentIdentifierDto extends InstrumentIdentifierBaseDto {
  * Request DTO for creating an Instrument Identifier
  */
 export interface InstrumentIdentifierCreateDto {
+  /**
+   * The Id of the Instrument Identifier Token.
+   * If not provided, CyberSource will generate one automatically.
+   * @minLength 12
+   * @maxLength 32
+   */
+  id?: string;
+
   type?: "enrollable card" | "enrollable token";
   tokenProvisioningInformation?: TokenProvisioningInformationDto;
   card?: InstrumentIdentifierCardDto;

@@ -2,7 +2,6 @@ import { Module, DynamicModule } from "@nestjs/common";
 import { CyberSourceService } from "./cybersource.service";
 import { CyberSourceConfig } from "./cybersource.config";
 import { PaymentService } from "./services/payment.service";
-import { TokenService } from "./services/token.service";
 import { VerificationService } from "./services/verification.service";
 import { CustomerService } from "./services/customer.service";
 import { PaymentInstrumentService } from "./services/payment-instrument.service";
@@ -24,7 +23,6 @@ export class CyberSourceModule {
         },
         CyberSourceService,
         PaymentService,
-        TokenService,
         VerificationService,
         CustomerService,
         PaymentInstrumentService,
@@ -36,7 +34,6 @@ export class CyberSourceModule {
       exports: [
         CyberSourceService,
         PaymentService,
-        TokenService,
         VerificationService,
         CustomerService,
         PaymentInstrumentService,
@@ -66,7 +63,6 @@ export class CyberSourceModule {
         },
         CyberSourceService,
         PaymentService,
-        TokenService,
         VerificationService,
         CustomerService,
         PaymentInstrumentService,
@@ -78,7 +74,6 @@ export class CyberSourceModule {
       exports: [
         CyberSourceService,
         PaymentService,
-        TokenService,
         VerificationService,
         CustomerService,
         PaymentInstrumentService,

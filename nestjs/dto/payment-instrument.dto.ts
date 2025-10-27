@@ -660,6 +660,13 @@ export interface PaymentInstrumentCreateDto {
   _links?: PaymentInstrumentLinksDto;
 
   /**
+   * The Id of the Payment Instrument Token.
+   * If not provided, CyberSource will generate one automatically.
+   * Min length: 1, Max length: 32
+   */
+  id?: string;
+
+  /**
    * Flag that indicates whether payment instrument is the default.
    * Possible Values:
    * - true: Payment instrument is default
@@ -712,6 +719,12 @@ export interface PaymentInstrumentUpdateDto {
    * Resource links (read-only)
    */
   _links?: PaymentInstrumentLinksDto;
+
+  /**
+   * The Id of the Payment Instrument Token.
+   * Min length: 1, Max length: 32
+   */
+  id?: string;
 
   /**
    * Flag that indicates whether payment instrument is the default.
